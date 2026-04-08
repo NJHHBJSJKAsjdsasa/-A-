@@ -1,8 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
 
 const Home = () => {
   const { t } = useTranslation();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const features = [
     { icon: '🌐', title: '多语言支持', description: '支持中文、英语、日语、韩语四种语言' },
@@ -13,20 +16,22 @@ const Home = () => {
 
   return (
     <div className="space-y-16">
-      <section className="relative bg-gradient-to-r from-doraemon-blue to-blue-600 text-white py-20 rounded-3xl overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full"></div>
-          <div className="absolute bottom-10 right-10 w-48 h-48 bg-white rounded-full"></div>
-        </div>
-        <div className="relative max-w-4xl mx-auto text-center px-4">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">{t('common.appName')}</h1>
-          <p className="text-xl md:text-2xl mb-8 text-blue-100">连接全球哆啦A梦粉丝，一起学习、交流、成长</p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link to="/register" className="bg-white text-doraemon-blue px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors">立即加入</Link>
-            <Link to="/community" className="border-2 border-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-doraemon-blue transition-colors">浏览社区</Link>
+      {!isAuthenticated && (
+        <section className="relative bg-gradient-to-r from-doraemon-blue to-blue-600 text-white py-20 rounded-3xl overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full"></div>
+            <div className="absolute bottom-10 right-10 w-48 h-48 bg-white rounded-full"></div>
           </div>
-        </div>
-      </section>
+          <div className="relative max-w-4xl mx-auto text-center px-4">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">{t('common.appName')}</h1>
+            <p className="text-xl md:text-2xl mb-8 text-blue-100">连接全球哆啦A梦粉丝，一起学习、交流、成长</p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link to="/register" className="bg-white text-doraemon-blue px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors">立即加入</Link>
+              <Link to="/community" className="border-2 border-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-doraemon-blue transition-colors">浏览社区</Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section>
         <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">平台特色</h2>
