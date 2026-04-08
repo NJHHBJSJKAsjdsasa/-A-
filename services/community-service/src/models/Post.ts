@@ -36,6 +36,7 @@ PostSchema.index({ authorId: 1 });
 PostSchema.index({ circleId: 1 });
 PostSchema.index({ createdAt: -1 });
 PostSchema.index({ tags: 1 });
-PostSchema.index({ title: 'text', content: 'text' });
+// Removed text index due to MongoDB language support issues
+// PostSchema.index({ title: 'text', content: 'text' }, { default_language: 'none' });
 
 export const Post = mongoose.model<IPost>('Post', PostSchema);

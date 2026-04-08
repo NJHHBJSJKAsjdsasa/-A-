@@ -30,6 +30,17 @@ const connectDB = async () => {
     const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/doraemon';
     await mongoose.connect(mongoUri);
     console.log('Connected to MongoDB');
+    
+    // Drop existing text indexes to avoid language override issues
+    const db = mongoose.connection.db;
+    if (db) {
+      try {
+        await db.collection('posts').dropIndexes();
+        console.log('Dropped existing indexes on posts collection');
+      } catch (e) {
+        // Ignore error if indexes don't exist
+      }
+    }
   } catch (error) {
     console.error('MongoDB connection error:', error);
     process.exit(1);

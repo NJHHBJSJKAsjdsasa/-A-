@@ -33,7 +33,8 @@ i18n
             loading: '加载中...',
             noData: '暂无数据',
             loadMore: '加载更多',
-            back: '返回'
+            back: '返回',
+            publish: '发布'
           },
           auth: {
             email: '邮箱',
@@ -60,7 +61,13 @@ i18n
             joinCircle: '加入圈子',
             leaveCircle: '退出圈子',
             members: '成员',
-            postsCount: '帖子数'
+            postsCount: '帖子数',
+            tags: '标签（逗号分隔）',
+            tagsPlaceholder: '例如：欢迎, 介绍, 帮助',
+            writeComment: '写评论...',
+            postComment: '发表评论',
+            noComments: '暂无评论，来抢沙发吧！',
+            pleaseLogin: '请先登录'
           },
           learning: {
             courses: '课程',
@@ -106,7 +113,8 @@ i18n
             loading: 'Loading...',
             noData: 'No data',
             loadMore: 'Load More',
-            back: 'Back'
+            back: 'Back',
+            publish: 'Publish'
           },
           auth: {
             email: 'Email',
@@ -133,7 +141,13 @@ i18n
             joinCircle: 'Join Circle',
             leaveCircle: 'Leave Circle',
             members: 'Members',
-            postsCount: 'Posts'
+            postsCount: 'Posts',
+            tags: 'Tags (comma separated)',
+            tagsPlaceholder: 'e.g. welcome, intro, help',
+            writeComment: 'Write a comment...',
+            postComment: 'Post Comment',
+            noComments: 'No comments yet. Be the first to comment!',
+            pleaseLogin: 'Please login first'
           },
           learning: {
             courses: 'Courses',
@@ -179,7 +193,8 @@ i18n
             loading: '読み込み中...',
             noData: 'データがありません',
             loadMore: 'もっと読む',
-            back: '戻る'
+            back: '戻る',
+            publish: '投稿'
           },
           auth: {
             email: 'メール',
@@ -206,7 +221,13 @@ i18n
             joinCircle: 'サークルに参加',
             leaveCircle: 'サークルを退会',
             members: 'メンバー',
-            postsCount: '投稿数'
+            postsCount: '投稿数',
+            tags: 'タグ（カンマ区切り）',
+            tagsPlaceholder: '例：ようこそ, 紹介, ヘルプ',
+            writeComment: 'コメントを書く...',
+            postComment: 'コメント投稿',
+            noComments: 'まだコメントがありません。最初のコメントを投稿しましょう！',
+            pleaseLogin: 'ログインしてください'
           },
           learning: {
             courses: 'コース',
@@ -252,7 +273,8 @@ i18n
             loading: '로딩 중...',
             noData: '데이터 없음',
             loadMore: '더 보기',
-            back: '뒤로'
+            back: '뒤로',
+            publish: '게시'
           },
           auth: {
             email: '이메일',
@@ -279,7 +301,13 @@ i18n
             joinCircle: '서클 가입',
             leaveCircle: '서클 탈퇴',
             members: '멤버',
-            postsCount: '게시물 수'
+            postsCount: '게시물 수',
+            tags: '태그 (쉼표로 구분)',
+            tagsPlaceholder: '예: 환영, 소개, 도움',
+            writeComment: '댓글 작성...',
+            postComment: '댓글 게시',
+            noComments: '아직 댓글이 없습니다. 첫 번째 댓글을 작성하세요!',
+            pleaseLogin: '로그인해주세요'
           },
           learning: {
             courses: '코스',

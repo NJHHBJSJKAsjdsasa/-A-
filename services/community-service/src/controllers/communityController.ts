@@ -28,7 +28,6 @@ export const getPosts = async (req: Request, res: Response) => {
       .sort(sortObj)
       .skip((Number(page) - 1) * Number(limit))
       .limit(Number(limit))
-      .populate('authorId', 'nickname avatar level')
       .lean();
 
     const total = await Post.countDocuments(query);
@@ -55,9 +54,7 @@ export const getPost = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const post = await Post.findById(id)
-      .populate('authorId', 'nickname avatar level')
-      .lean();
+    const post = await Post.findById(id).lean();
 
     if (!post) {
       return res.status(404).json({
@@ -250,13 +247,11 @@ export const getComments = async (req: Request, res: Response) => {
       .sort({ createdAt: -1 })
       .skip((Number(page) - 1) * Number(limit))
       .limit(Number(limit))
-      .populate('authorId', 'nickname avatar level')
       .lean();
 
     for (const comment of comments) {
       const replies = await Comment.find({ parentId: comment._id })
         .sort({ createdAt: 1 })
-        .populate('authorId', 'nickname avatar level')
         .limit(3)
         .lean();
       (comment as Record<string, unknown>).replies = replies;
@@ -374,7 +369,6 @@ export const getCircles = async (req: Request, res: Response) => {
       .sort({ posts: -1, createdAt: -1 })
       .skip((Number(page) - 1) * Number(limit))
       .limit(Number(limit))
-      .populate('ownerId', 'nickname avatar')
       .lean();
 
     const total = await Circle.countDocuments(query);
@@ -401,10 +395,7 @@ export const getCircle = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const circle = await Circle.findById(id)
-      .populate('ownerId', 'nickname avatar level')
-      .populate('members', 'nickname avatar')
-      .lean();
+    const circle = await Circle.findById(id).lean();
 
     if (!circle) {
       return res.status(404).json({

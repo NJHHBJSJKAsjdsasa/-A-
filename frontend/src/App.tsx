@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Community from './pages/Community';
 import PostDetail from './pages/PostDetail';
+import CreatePost from './pages/CreatePost';
 import Circles from './pages/Circles';
 import CircleDetail from './pages/CircleDetail';
 import Learning from './pages/Learning';
@@ -21,6 +22,7 @@ function App() {
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="community" element={<Community />} />
+        <Route path="posts/create" element={<CreatePost />} />
         <Route path="posts/:id" element={<PostDetail />} />
         <Route path="circles" element={<Circles />} />
         <Route path="circles/:id" element={<CircleDetail />} />

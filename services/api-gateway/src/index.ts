@@ -65,9 +65,14 @@ const authMiddleware = (req: express.Request, res: express.Response, next: expre
   }
 };
 
-const serviceProxy = (target: string) => proxy(target, {
+const serviceProxy = (target: string, pathPrefix: string = '') => proxy(target, {
   proxyReqPathResolver: (req) => {
-    return req.originalUrl.replace(/^\/api/, '');
+    // Remove /api prefix and add custom path prefix if needed
+    let path = req.originalUrl.replace(/^\/api/, '');
+    if (pathPrefix) {
+      path = path.replace(new RegExp(`^${pathPrefix}`), '');
+    }
+    return path || '/';
   },
   proxyReqBodyDecorator: (bodyContent, srcReq) => {
     // Pass body content as-is
@@ -92,8 +97,8 @@ app.get('/health', (req, res) => {
 });
 
 // Auth routes - both /auth and /api/auth
-app.use('/auth', express.json(), serviceProxy(USER_SERVICE));
-app.use('/api/auth', express.json(), serviceProxy(USER_SERVICE));
+app.use('/auth', express.json(), serviceProxy(USER_SERVICE, '/auth'));
+app.use('/api/auth', express.json(), serviceProxy(USER_SERVICE, '/auth'));
 
 // User routes
 app.use('/users', express.json(), authMiddleware, serviceProxy(USER_SERVICE));
