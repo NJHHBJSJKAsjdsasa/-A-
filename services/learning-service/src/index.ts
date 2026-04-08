@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
-import learningRoutes from './routes/learningRoutes.js';
+import learningRoutes from './routes/learningRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 3005;

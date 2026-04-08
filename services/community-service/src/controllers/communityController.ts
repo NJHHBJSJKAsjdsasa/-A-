@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { Post } from '../models/Post.js';
-import { Comment } from '../models/Comment.js';
-import { Circle } from '../models/Circle.js';
-import { AuthRequest } from '../middleware/auth.js';
+import { Post } from '../models/Post';
+import { Comment } from '../models/Comment';
+import { Circle } from '../models/Circle';
+import { AuthRequest } from '../middleware/auth';
 
 export const getPosts = async (req: Request, res: Response) => {
   try {

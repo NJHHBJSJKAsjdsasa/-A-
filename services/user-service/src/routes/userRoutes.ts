@@ -14,8 +14,8 @@ import {
   changePassword,
   deleteAccount,
   getMe
-} from '../controllers/userController.js';
-import { authenticate } from '../middleware/auth.js';
+} from '../controllers/userController';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 

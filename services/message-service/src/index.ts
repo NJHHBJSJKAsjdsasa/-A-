@@ -5,9 +5,9 @@ import mongoose from 'mongoose';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
-import messageRoutes from './routes/messageRoutes.js';
-import { Message } from './models/Message.js';
-import { Conversation } from './models/Conversation.js';
+import messageRoutes from './routes/messageRoutes';
+import { Message } from './models/Message';
+import { Conversation } from './models/Conversation';
 
 const app = express();
 const PORT = process.env.PORT || 3003;

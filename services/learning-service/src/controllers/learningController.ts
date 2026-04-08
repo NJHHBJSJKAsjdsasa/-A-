@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { Course } from '../models/Course.js';
-import { Lesson } from '../models/Lesson.js';
-import { UserProgress } from '../models/UserProgress.js';
-import { Enrollment } from '../models/Enrollment.js';
-import { AuthRequest } from '../middleware/auth.js';
+import { Course } from '../models/Course';
+import { Lesson } from '../models/Lesson';
+import { UserProgress } from '../models/UserProgress';
+import { Enrollment } from '../models/Enrollment';
+import { AuthRequest } from '../middleware/auth';
 
 export const getCourses = async (req: Request, res: Response) => {
   try {

@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { Badge } from '../models/Badge.js';
-import { UserAchievement } from '../models/UserAchievement.js';
-import { Leaderboard } from '../models/Leaderboard.js';
-import { PointTransaction } from '../models/PointTransaction.js';
-import { AuthRequest } from '../middleware/auth.js';
+import { Badge } from '../models/Badge';
+import { UserAchievement } from '../models/UserAchievement';
+import { Leaderboard } from '../models/Leaderboard';
+import { PointTransaction } from '../models/PointTransaction';
+import { AuthRequest } from '../middleware/auth';
 
 export const getBadges = async (req: Request, res: Response) => {
   try {

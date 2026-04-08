@@ -9,8 +9,8 @@ import {
   completeLesson,
   getProgress,
   submitExercise
-} from '../controllers/learningController.js';
-import { authenticate } from '../middleware/auth.js';
+} from '../controllers/learningController';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 

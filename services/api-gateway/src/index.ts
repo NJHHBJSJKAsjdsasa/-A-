@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
 import jwt from 'jsonwebtoken';
-import { config } from '../shared/config.js';
+import { config } from '@doraemon/shared';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -104,21 +104,41 @@ app.use('/users', express.json(), authMiddleware, serviceProxy(USER_SERVICE));
 app.use('/api/users', express.json(), authMiddleware, serviceProxy(USER_SERVICE));
 
 // Community routes
-// Public routes - GET requests only
+// Public routes - GET requests only (must be defined BEFORE protected routes)
 app.get('/posts', serviceProxy(COMMUNITY_SERVICE));
 app.get('/api/posts', serviceProxy(COMMUNITY_SERVICE));
+app.get('/posts/:id', serviceProxy(COMMUNITY_SERVICE));
+app.get('/api/posts/:id', serviceProxy(COMMUNITY_SERVICE));
+app.get('/posts/:id/comments', serviceProxy(COMMUNITY_SERVICE));
+app.get('/api/posts/:id/comments', serviceProxy(COMMUNITY_SERVICE));
 app.get('/comments', serviceProxy(COMMUNITY_SERVICE));
 app.get('/api/comments', serviceProxy(COMMUNITY_SERVICE));
 app.get('/circles', serviceProxy(COMMUNITY_SERVICE));
 app.get('/api/circles', serviceProxy(COMMUNITY_SERVICE));
+app.get('/circles/:id', serviceProxy(COMMUNITY_SERVICE));
+app.get('/api/circles/:id', serviceProxy(COMMUNITY_SERVICE));
 
-// Protected routes - require authentication
-app.use('/posts', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.use('/api/posts', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.use('/comments', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.use('/api/comments', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.use('/circles', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.use('/api/circles', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+// Protected routes - require authentication (POST, PUT, DELETE)
+app.post('/posts', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.post('/api/posts', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.put('/posts/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.put('/api/posts/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.delete('/posts/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.delete('/api/posts/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.post('/posts/:id/like', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.post('/api/posts/:id/like', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.post('/posts/:id/comments', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.post('/api/posts/:id/comments', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.delete('/comments/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.delete('/api/comments/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.post('/circles', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.post('/api/circles', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.put('/circles/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.put('/api/circles/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.delete('/circles/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.delete('/api/circles/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.post('/circles/:id/join', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.post('/api/circles/:id/join', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
 
 // Message routes
 app.use('/messages', express.json(), authMiddleware, serviceProxy(MESSAGE_SERVICE));

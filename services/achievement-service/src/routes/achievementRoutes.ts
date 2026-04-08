@@ -10,8 +10,8 @@ import {
   getPoints,
   usePoints,
   earnPoints
-} from '../controllers/achievementController.js';
-import { authenticate } from '../middleware/auth.js';
+} from '../controllers/achievementController';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 

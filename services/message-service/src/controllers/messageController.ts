@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { Conversation } from '../models/Conversation.js';
-import { Message } from '../models/Message.js';
-import { AuthRequest } from '../middleware/auth.js';
+import { Conversation } from '../models/Conversation';
+import { Message } from '../models/Message';
+import { AuthRequest } from '../middleware/auth';
 
 export const getConversations = async (req: AuthRequest, res: Response) => {
   try {

@@ -16,8 +16,8 @@ import {
   joinCircle,
   updateCircle,
   deleteCircle
-} from '../controllers/communityController.js';
-import { authenticate, optionalAuth } from '../middleware/auth.js';
+} from '../controllers/communityController';
+import { authenticate, optionalAuth } from '../middleware/auth';
 
 const router = Router();
 

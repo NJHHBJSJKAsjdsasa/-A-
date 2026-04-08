@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
-import { User } from '../models/User.js';
-import { AuthRequest } from '../middleware/auth.js';
-import { config } from '../../shared/config.js';
+import { User } from '../models/User';
+import { AuthRequest } from '../middleware/auth';
+import { config } from '@doraemon/shared';
 
 const generateTokens = (userId: string, email: string) => {
   const accessToken = jwt.sign({ userId, email }, config.jwt.secret, { expiresIn: config.jwt.expiresIn });

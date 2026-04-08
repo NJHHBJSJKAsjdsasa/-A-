@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { File } from '../models/File.js';
-import { AuthRequest } from '../middleware/auth.js';
-import { minioClient, BUCKET_NAME } from '../config/minio.js';
+import { File } from '../models/File';
+import { AuthRequest } from '../middleware/auth';
+import { minioClient, BUCKET_NAME } from '../config/minio';
 
 const ALLOWED_MIME_TYPES = [
   'image/jpeg',

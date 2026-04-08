@@ -2,8 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
-import fileRoutes from './routes/fileRoutes.js';
-import { ensureBucket } from './config/minio.js';
+import fileRoutes from './routes/fileRoutes';
+import { ensureBucket } from './config/minio';
 
 const app = express();
 const PORT = process.env.PORT || 3006;

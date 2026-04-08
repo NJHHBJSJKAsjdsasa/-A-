@@ -8,8 +8,8 @@ import {
   sendMessage,
   markAsRead,
   getUnreadCount
-} from '../controllers/messageController.js';
-import { authenticate } from '../middleware/auth.js';
+} from '../controllers/messageController';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 

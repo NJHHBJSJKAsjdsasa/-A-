@@ -6,8 +6,8 @@ import {
   deleteFile,
   getPresignedUrl,
   listFiles
-} from '../controllers/fileController.js';
-import { authenticate } from '../middleware/auth.js';
+} from '../controllers/fileController';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
