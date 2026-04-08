@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --doraemon-blue: #009FE3;
+  --doraemon-red: #E60012;
+  --doraemon-yellow: #F8B62D;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: #f5f7fa;
+}
+
+.btn-primary {
+  @apply bg-doraemon-blue text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-600 transition-colors;
+}
+
+.btn-secondary {
+  @apply bg-white text-doraemon-blue border-2 border-doraemon-blue px-6 py-2 rounded-full font-semibold hover:bg-doraemon-blue hover:text-white transition-colors;
+}
+
+.card {
+  @apply bg-white rounded-2xl shadow-lg p-6;
+}
+
+.input-field {
+  @apply w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-doraemon-blue focus:outline-none transition-colors;
+}
+
+.nav-link {
+  @apply text-gray-600 hover:text-doraemon-blue transition-colors font-medium;
+}
+
+.nav-link-active {
+  @apply text-doraemon-blue font-semibold;
+}

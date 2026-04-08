@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: doraemon-config
+  namespace: doraemon-platform
+data:
+  NODE_ENV: "production"
+  MONGODB_URI: "mongodb://admin:admin123@mongodb:27017/doraemon?authSource=admin"
+  REDIS_URL: "redis://redis:6379"
+  USER_SERVICE_URL: "http://user-service:3001"
+  COMMUNITY_SERVICE_URL: "http://community-service:3002"
+  MESSAGE_SERVICE_URL: "http://message-service:3003"
+  ACHIEVEMENT_SERVICE_URL: "http://achievement-service:3004"
+  LEARNING_SERVICE_URL: "http://learning-service:3005"
+  FILE_SERVICE_URL: "http://file-service:3006"
+  MINIO_ENDPOINT: "minio"
+  MINIO_PORT: "9000"
+  MINIO_BUCKET: "doraemon-files"
+  MINIO_USE_SSL: "false"

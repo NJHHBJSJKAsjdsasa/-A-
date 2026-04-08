@@ -1,0 +1,40 @@
+{
+  "name": "doraemon-platform",
+  "version": "1.0.0",
+  "description": "Doraemon Multilingual Platform - A comprehensive fan community with language learning features",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:gateway\" \"npm run dev:user\" \"npm run dev:community\" \"npm run dev:message\" \"npm run dev:achievement\" \"npm run dev:learning\" \"npm run dev:file\" \"npm run dev:frontend\"",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:gateway": "npm run dev --workspace=services/api-gateway",
+    "dev:user": "npm run dev --workspace=services/user-service",
+    "dev:community": "npm run dev --workspace=services/community-service",
+    "dev:message": "npm run dev --workspace=services/message-service",
+    "dev:achievement": "npm run dev --workspace=services/achievement-service",
+    "dev:learning": "npm run dev --workspace=services/learning-service",
+    "dev:file": "npm run dev --workspace=services/file-service",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "lint": "eslint . --ext .ts,.tsx",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "k8s:apply": "kubectl apply -f k8s/",
+    "k8s:delete": "kubectl delete -f k8s/"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.55.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "typescript": "^5.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

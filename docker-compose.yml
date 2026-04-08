@@ -1,0 +1,226 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: doraemon-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: doraemon
+    volumes:
+      - mongodb_data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - doraemon-network
+
+  redis:
+    image: redis:7.0-alpine
+    container_name: doraemon-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - doraemon-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: doraemon-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - doraemon-network
+
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    container_name: doraemon-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+      - JWT_SECRET=your-jwt-secret-key
+      - JWT_REFRESH_SECRET=your-refresh-secret-key
+      - REDIS_URL=redis://redis:6379
+      - USER_SERVICE_URL=http://user-service:3001
+      - COMMUNITY_SERVICE_URL=http://community-service:3002
+      - MESSAGE_SERVICE_URL=http://message-service:3003
+      - ACHIEVEMENT_SERVICE_URL=http://achievement-service:3004
+      - LEARNING_SERVICE_URL=http://learning-service:3005
+      - FILE_SERVICE_URL=http://file-service:3006
+    depends_on:
+      - redis
+      - user-service
+      - community-service
+      - message-service
+      - achievement-service
+      - learning-service
+      - file-service
+    networks:
+      - doraemon-network
+
+  user-service:
+    build:
+      context: ./services/user-service
+      dockerfile: Dockerfile
+    container_name: doraemon-user
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/doraemon?authSource=admin
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-jwt-secret-key
+      - JWT_REFRESH_SECRET=your-refresh-secret-key
+      - SMTP_HOST=smtp.example.com
+      - SMTP_PORT=587
+      - SMTP_USER=noreply@example.com
+      - SMTP_PASS=your-smtp-password
+      - SMS_ACCESS_KEY=your-sms-key
+      - SMS_SECRET_KEY=your-sms-secret
+      - OAUTH_WECHAT_APPID=your-wechat-appid
+      - OAUTH_WECHAT_SECRET=your-wechat-secret
+      - OAUTH_QQ_APPID=your-qq-appid
+      - OAUTH_QQ_SECRET=your-qq-secret
+      - OAUTH_WEIBO_APPKEY=your-weibo-appkey
+      - OAUTH_WEIBO_SECRET=your-weibo-secret
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - doraemon-network
+
+  community-service:
+    build:
+      context: ./services/community-service
+      dockerfile: Dockerfile
+    container_name: doraemon-community
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/doraemon?authSource=admin
+      - REDIS_URL=redis://redis:6379
+      - FILE_SERVICE_URL=http://file-service:3006
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - doraemon-network
+
+  message-service:
+    build:
+      context: ./services/message-service
+      dockerfile: Dockerfile
+    container_name: doraemon-message
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/doraemon?authSource=admin
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - doraemon-network
+
+  achievement-service:
+    build:
+      context: ./services/achievement-service
+      dockerfile: Dockerfile
+    container_name: doraemon-achievement
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=development
+      - PORT=3004
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/doraemon?authSource=admin
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - doraemon-network
+
+  learning-service:
+    build:
+      context: ./services/learning-service
+      dockerfile: Dockerfile
+    container_name: doraemon-learning
+    ports:
+      - "3005:3005"
+    environment:
+      - NODE_ENV=development
+      - PORT=3005
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/doraemon?authSource=admin
+      - REDIS_URL=redis://redis:6379
+      - FILE_SERVICE_URL=http://file-service:3006
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - doraemon-network
+
+  file-service:
+    build:
+      context: ./services/file-service
+      dockerfile: Dockerfile
+    container_name: doraemon-file
+    ports:
+      - "3006:3006"
+    environment:
+      - NODE_ENV=development
+      - PORT=3006
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/doraemon?authSource=admin
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin123
+      - MINIO_BUCKET=doraemon-files
+      - MINIO_USE_SSL=false
+    depends_on:
+      - mongodb
+      - minio
+    networks:
+      - doraemon-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: doraemon-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8080/api
+      - VITE_WS_URL=ws://localhost:8080
+    depends_on:
+      - api-gateway
+    networks:
+      - doraemon-network
+
+volumes:
+  mongodb_data:
+  redis_data:
+  minio_data:
+
+networks:
+  doraemon-network:
+    driver: bridge
