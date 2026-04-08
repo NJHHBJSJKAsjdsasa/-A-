@@ -48,10 +48,10 @@ services:
       dockerfile: Dockerfile
     container_name: doraemon-gateway
     ports:
-      - "8080:8080"
+      - "8888:8888"
     environment:
       - NODE_ENV=development
-      - PORT=8080
+      - PORT=8888
       - JWT_SECRET=your-jwt-secret-key
       - JWT_REFRESH_SECRET=your-refresh-secret-key
       - REDIS_URL=redis://redis:6379
@@ -209,8 +209,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - VITE_API_URL=http://localhost:8080/api
-      - VITE_WS_URL=ws://localhost:8080
+      - VITE_API_URL=http://localhost:8888/api
+      - VITE_WS_URL=ws://localhost:8888
     depends_on:
       - api-gateway
     networks:

@@ -7,7 +7,7 @@ import morgan from 'morgan';
 import jwt from 'jsonwebtoken';
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8888;
 
 const USER_SERVICE = process.env.USER_SERVICE_URL || 'http://localhost:3001';
 const COMMUNITY_SERVICE = process.env.COMMUNITY_SERVICE_URL || 'http://localhost:3002';
