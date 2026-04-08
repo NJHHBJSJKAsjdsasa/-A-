@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
 import jwt from 'jsonwebtoken';
+import { config } from '../shared/config.js';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -16,10 +17,8 @@ const ACHIEVEMENT_SERVICE = process.env.ACHIEVEMENT_SERVICE_URL || 'http://local
 const LEARNING_SERVICE = process.env.LEARNING_SERVICE_URL || 'http://localhost:3005';
 const FILE_SERVICE = process.env.FILE_SERVICE_URL || 'http://localhost:3006';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key';
-
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || '*',
+  origin: config.cors.origin,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 };
@@ -54,7 +53,7 @@ const authMiddleware = (req: express.Request, res: express.Response, next: expre
 
   const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, config.jwt.secret);
     (req as express.Request & { user: unknown }).user = decoded;
     next();
   } catch (error) {
@@ -105,12 +104,21 @@ app.use('/users', express.json(), authMiddleware, serviceProxy(USER_SERVICE));
 app.use('/api/users', express.json(), authMiddleware, serviceProxy(USER_SERVICE));
 
 // Community routes
-app.use('/posts', express.json(), serviceProxy(COMMUNITY_SERVICE));
-app.use('/api/posts', express.json(), serviceProxy(COMMUNITY_SERVICE));
-app.use('/comments', express.json(), serviceProxy(COMMUNITY_SERVICE));
-app.use('/api/comments', express.json(), serviceProxy(COMMUNITY_SERVICE));
-app.use('/circles', express.json(), serviceProxy(COMMUNITY_SERVICE));
-app.use('/api/circles', express.json(), serviceProxy(COMMUNITY_SERVICE));
+// Public routes - GET requests only
+app.get('/posts', serviceProxy(COMMUNITY_SERVICE));
+app.get('/api/posts', serviceProxy(COMMUNITY_SERVICE));
+app.get('/comments', serviceProxy(COMMUNITY_SERVICE));
+app.get('/api/comments', serviceProxy(COMMUNITY_SERVICE));
+app.get('/circles', serviceProxy(COMMUNITY_SERVICE));
+app.get('/api/circles', serviceProxy(COMMUNITY_SERVICE));
+
+// Protected routes - require authentication
+app.use('/posts', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.use('/api/posts', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.use('/comments', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.use('/api/comments', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.use('/circles', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+app.use('/api/circles', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
 
 // Message routes
 app.use('/messages', express.json(), authMiddleware, serviceProxy(MESSAGE_SERVICE));

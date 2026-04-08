@@ -201,11 +201,19 @@ export const completeLesson = async (req: AuthRequest, res: Response) => {
       await enrollment.save();
     }
 
+    // TODO: Update user points and exp - would need to call user service or have shared database access
+    // For now, we'll just log that this needs to be done
+    const pointsEarned = Math.floor(score / 20); // Example: 1 point per 20% score
+    const expEarned = pointsEarned * 5; // Example: 5 exp per point
+    console.log(`Need to update user ${userId} - add ${pointsEarned} points and ${expEarned} exp for completing lesson`);
+
     res.json({
       success: true,
       data: {
         progress,
-        courseProgress: enrollment ? enrollment.progress : 0
+        courseProgress: enrollment ? enrollment.progress : 0,
+        pointsEarned,
+        expEarned
       }
     });
   } catch (error) {
