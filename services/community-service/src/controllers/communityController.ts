@@ -178,12 +178,22 @@ export const deletePost = async (req: AuthRequest, res: Response) => {
       });
     }
 
+    // Get post details for cleanup
+    const authorId = post.authorId;
+    const postLikes = post.likes;
+
+    // Delete post and related comments
     await Post.findByIdAndDelete(id);
     await Comment.deleteMany({ postId: id });
 
+    // Update circle post count
     if (post.circleId) {
       await Circle.findByIdAndUpdate(post.circleId, { $inc: { posts: -1 } });
     }
+
+    // TODO: Update user data (points, exp) - would need to call user service or have shared database access
+    // For now, we'll just log that this needs to be done
+    console.log(`Need to update user ${authorId} - remove points/exp for deleted post with ${postLikes} likes`);
 
     res.json({
       success: true,
@@ -296,6 +306,25 @@ export const createComment = async (req: AuthRequest, res: Response) => {
         success: false,
         error: { code: 'POST_NOT_FOUND', message: 'Post not found' }
       });
+    }
+
+    // Validate parent comment if provided
+    if (parentId) {
+      const parentComment = await Comment.findById(parentId);
+      if (!parentComment) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 'PARENT_COMMENT_NOT_FOUND', message: 'Parent comment not found' }
+        });
+      }
+      
+      // Ensure parent comment belongs to the same post
+      if (parentComment.postId.toString() !== postId) {
+        return res.status(400).json({
+          success: false,
+          error: { code: 'INVALID_PARENT_COMMENT', message: 'Parent comment does not belong to this post' }
+        });
+      }
     }
 
     const comment = new Comment({

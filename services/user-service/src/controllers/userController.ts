@@ -4,15 +4,11 @@ import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '../models/User.js';
 import { AuthRequest } from '../middleware/auth.js';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key';
-const JWT_EXPIRES_IN = '2h';
-const JWT_REFRESH_EXPIRES_IN = '7d';
+import { config } from '../../shared/config.js';
 
 const generateTokens = (userId: string, email: string) => {
-  const accessToken = jwt.sign({ userId, email }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
-  const refreshToken = jwt.sign({ userId, email }, JWT_REFRESH_SECRET, { expiresIn: JWT_REFRESH_EXPIRES_IN });
+  const accessToken = jwt.sign({ userId, email }, config.jwt.secret, { expiresIn: config.jwt.expiresIn });
+  const refreshToken = jwt.sign({ userId, email }, config.jwt.refreshSecret, { expiresIn: config.jwt.refreshExpiresIn });
   return { accessToken, refreshToken };
 };
 
@@ -35,7 +31,7 @@ export const register = async (req: Request, res: Response) => {
       });
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, config.bcrypt.saltRounds);
     
     const user = new User({
       email,
@@ -141,7 +137,7 @@ export const refreshToken = async (req: Request, res: Response) => {
       });
     }
 
-    const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as { userId: string; email: string };
+    const decoded = jwt.verify(refreshToken, config.jwt.refreshSecret) as { userId: string; email: string };
     const user = await User.findById(decoded.userId);
 
     if (!user) {
@@ -209,7 +205,7 @@ export const oauthLogin = async (req: Request, res: Response) => {
     if (!user) {
       user = new User({
         email: `${provider}_${oauthUser.id}@doraemon.temp`,
-        passwordHash: await bcrypt.hash(uuidv4(), 10),
+        passwordHash: await bcrypt.hash(uuidv4(), config.bcrypt.saltRounds),
         nickname: oauthUser.name,
         avatar: oauthUser.avatar || `/avatars/${Math.floor(Math.random() * 10) + 1}.png`,
         oauthProviders: [{ provider: provider as 'wechat' | 'qq' | 'weibo' | 'google', providerId: oauthUser.id }]
@@ -477,7 +473,7 @@ export const changePassword = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    user.passwordHash = await bcrypt.hash(newPassword, 10);
+    user.passwordHash = await bcrypt.hash(newPassword, config.bcrypt.saltRounds);
     await user.save();
 
     res.json({
