@@ -11,7 +11,7 @@ const Community = () => {
   const { posts, loading } = useSelector((state: RootState) => state.community);
 
   useEffect(() => {
-    dispatch(fetchPosts() as never);
+    dispatch(fetchPosts() as any);
   }, [dispatch]);
 
   return (
