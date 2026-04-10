@@ -7,7 +7,7 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > 一个综合性的哆啦A梦粉丝社区平台，结合语言学习与社交交流功能，支持多语言国际化。
-
+##网站：http://49.232.170.26:3000/
 ## 🌟 项目特色
 
 - 🌍 **多语言支持** - 支持中文、英语、日语、韩语四种语言
