@@ -3,6 +3,7 @@ import { Post } from '../models/Post';
 import { Comment } from '../models/Comment';
 import { Circle } from '../models/Circle';
 import { AuthRequest } from '../middleware/auth';
+import { ServiceCommunicator } from '@doraemon/shared';
 
 export const getPosts = async (req: Request, res: Response) => {
   try {
@@ -85,6 +86,55 @@ export const createPost = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({
         success: false,
         error: { code: 'MISSING_FIELDS', message: 'Title and content are required' }
+      });
+    }
+
+    // Title validation
+    if (title.length < 2 || title.length > 100) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_TITLE', message: 'Title must be between 2 and 100 characters' }
+      });
+    }
+
+    // Content validation
+    if (content.length < 5 || content.length > 5000) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_CONTENT', message: 'Content must be between 5 and 5000 characters' }
+      });
+    }
+
+    // Images validation
+    if (!Array.isArray(images)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_IMAGES', message: 'Images must be an array' }
+      });
+    }
+
+    // Videos validation
+    if (!Array.isArray(videos)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_VIDEOS', message: 'Videos must be an array' }
+      });
+    }
+
+    // Tags validation
+    if (!Array.isArray(tags)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_TAGS', message: 'Tags must be an array' }
+      });
+    }
+
+    // Language validation
+    const validLanguages = ['zh', 'en', 'ja', 'ko'];
+    if (!validLanguages.includes(language)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_LANGUAGE', message: 'Invalid language code' }
       });
     }
 
@@ -191,9 +241,22 @@ export const deletePost = async (req: AuthRequest, res: Response) => {
       await Circle.findByIdAndUpdate(post.circleId, { $inc: { posts: -1 } });
     }
 
-    // TODO: Update user data (points, exp) - would need to call user service or have shared database access
-    // For now, we'll just log that this needs to be done
-    console.log(`Need to update user ${authorId} - remove points/exp for deleted post with ${postLikes} likes`);
+    // Update user data (points, exp) by calling user service
+    try {
+      await ServiceCommunicator.userService(`/users/${authorId}/update-points`, {
+        method: 'POST',
+        data: {
+          points: -postLikes * 2, // Remove 2 points per like
+          exp: -postLikes // Remove 1 exp per like
+        },
+        headers: {
+          'Authorization': req.headers.authorization || ''
+        }
+      });
+    } catch (error) {
+      console.error('Failed to update user points/exp:', error);
+      // Continue with deletion even if user service call fails
+    }
 
     res.json({
       success: true,
@@ -297,6 +360,22 @@ export const createComment = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({
         success: false,
         error: { code: 'MISSING_CONTENT', message: 'Comment content is required' }
+      });
+    }
+
+    // Content validation
+    if (content.length < 1 || content.length > 1000) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_CONTENT', message: 'Comment content must be between 1 and 1000 characters' }
+      });
+    }
+
+    // Parent ID validation if provided
+    if (parentId && typeof parentId !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_PARENT_ID', message: 'Parent ID must be a string' }
       });
     }
 

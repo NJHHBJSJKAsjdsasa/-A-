@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { fetchCourses } from '../store/slices/learningSlice';
 import { RootState } from '../store';
+import Loading from '../components/Loading';
 
 const Learning = () => {
   const { t } = useTranslation();
@@ -40,7 +41,9 @@ const Learning = () => {
       </div>
 
       {loading ? (
-        <div className="text-center py-12">{t('common.loading')}</div>
+        <div className="py-12">
+          <Loading message={t('common.loading')} variant="dots" size="large" />
+        </div>
       ) : courses.length === 0 ? (
         <div className="text-center py-12 text-gray-500">{t('common.noData')}</div>
       ) : (

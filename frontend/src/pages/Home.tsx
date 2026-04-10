@@ -34,11 +34,11 @@ const Home = () => {
       )}
 
       <section>
-        <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">平台特色</h2>
+        <h2 className="text-3xl font-bold text-center mb-12 text-gray-800 animate-fade-in">平台特色</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
-            <div key={index} className="card text-center hover:shadow-xl transition-shadow">
-              <div className="text-5xl mb-4">{feature.icon}</div>
+            <div key={index} className={`card text-center hover-lift animate-slide-in stagger-${index + 1}`}>
+              <div className="text-5xl mb-4 hover-scale">{feature.icon}</div>
               <h3 className="text-xl font-semibold mb-2 text-gray-800">{feature.title}</h3>
               <p className="text-gray-600">{feature.description}</p>
             </div>
@@ -47,44 +47,44 @@ const Home = () => {
       </section>
 
       <section className="bg-white rounded-3xl px-8 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">热门圈子</h2>
+        <h2 className="text-3xl font-bold text-center mb-12 text-gray-800 animate-fade-in">热门圈子</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             { name: '日语学习小组', members: 1234, posts: 567 },
             { name: '英语角', members: 2345, posts: 890 },
             { name: '韩语爱好者', members: 987, posts: 345 }
           ].map((circle, index) => (
-            <div key={index} className="border-2 border-gray-100 rounded-2xl p-6 hover:border-doraemon-blue transition-colors">
+            <div key={index} className={`border-2 border-gray-100 rounded-2xl p-6 hover-lift hover:border-doraemon-blue transition-colors animate-bounce-in stagger-${index + 1}`}>
               <h3 className="font-semibold text-lg mb-2">{circle.name}</h3>
               <p className="text-gray-500 text-sm mb-4">{circle.members} 成员 · {circle.posts} 帖子</p>
-              <button className="btn-secondary text-sm w-full">{t('community.joinCircle')}</button>
+              <button className="btn-secondary text-sm w-full hover-glow">{t('community.joinCircle')}</button>
             </div>
           ))}
         </div>
-        <div className="text-center mt-8">
-          <Link to="/circles" className="text-doraemon-blue font-semibold hover:underline">查看更多圈子 →</Link>
+        <div className="text-center mt-8 animate-fade-in stagger-4">
+          <Link to="/circles" className="text-doraemon-blue font-semibold hover:underline hover-scale">查看更多圈子 →</Link>
         </div>
       </section>
 
       <section>
-        <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">推荐课程</h2>
+        <h2 className="text-3xl font-bold text-center mb-12 text-gray-800 animate-fade-in">推荐课程</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             { title: '日语入门', language: '日语', level: '初级', enrolled: 3456 },
             { title: '英语口语进阶', language: '英语', level: '中级', enrolled: 4567 },
             { title: '韩语基础', language: '韩语', level: '初级', enrolled: 2345 }
           ].map((course, index) => (
-            <div key={index} className="card hover:shadow-xl transition-shadow">
-              <div className="h-32 bg-gradient-to-r from-blue-400 to-blue-600 rounded-xl mb-4"></div>
+            <div key={index} className={`card hover-lift animate-slide-in stagger-${index + 1}`}>
+              <div className="h-32 bg-gradient-to-r from-blue-400 to-blue-600 rounded-xl mb-4 hover-scale"></div>
               <span className="text-sm text-doraemon-blue font-medium">{course.language} · {course.level}</span>
               <h3 className="font-semibold text-lg mt-2 mb-2">{course.title}</h3>
               <p className="text-gray-500 text-sm">{course.enrolled} 人已报名</p>
-              <button className="btn-primary w-full mt-4">{t('learning.enroll')}</button>
+              <button className="btn-primary w-full mt-4 hover-glow">{t('learning.enroll')}</button>
             </div>
           ))}
         </div>
-        <div className="text-center mt-8">
-          <Link to="/learning" className="text-doraemon-blue font-semibold hover:underline">查看更多课程 →</Link>
+        <div className="text-center mt-8 animate-fade-in stagger-4">
+          <Link to="/learning" className="text-doraemon-blue font-semibold hover:underline hover-scale">查看更多课程 →</Link>
         </div>
       </section>
     </div>

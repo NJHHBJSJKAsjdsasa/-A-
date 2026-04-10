@@ -23,6 +23,40 @@ export const register = async (req: Request, res: Response) => {
       });
     }
 
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_EMAIL', message: 'Invalid email format' }
+      });
+    }
+
+    // Password strength validation
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'WEAK_PASSWORD', message: 'Password must be at least 8 characters long' }
+      });
+    }
+
+    // Nickname validation
+    if (nickname.length < 2 || nickname.length > 50) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_NICKNAME', message: 'Nickname must be between 2 and 50 characters' }
+      });
+    }
+
+    // Language validation
+    const validLanguages = ['zh', 'en', 'ja', 'ko'];
+    if (!validLanguages.includes(language)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_LANGUAGE', message: 'Invalid language code' }
+      });
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({
@@ -79,6 +113,15 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         error: { code: 'MISSING_FIELDS', message: 'Email and password are required' }
+      });
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_EMAIL', message: 'Invalid email format' }
       });
     }
 
@@ -268,6 +311,15 @@ export const sendPhoneVerification = async (req: Request, res: Response) => {
       });
     }
 
+    // Phone number format validation (supports international formats)
+    const phoneRegex = /^[+]?[0-9\s-]{8,15}$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_PHONE', message: 'Invalid phone number format' }
+      });
+    }
+
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     
     console.log(`SMS verification code for ${phone}: ${code}`);
@@ -294,6 +346,24 @@ export const verifyPhone = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({
         success: false,
         error: { code: 'MISSING_FIELDS', message: 'Phone and code are required' }
+      });
+    }
+
+    // Phone number format validation
+    const phoneRegex = /^[+]?[0-9\s-]{8,15}$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_PHONE', message: 'Invalid phone number format' }
+      });
+    }
+
+    // Verification code validation
+    const codeRegex = /^[0-9]{6}$/;
+    if (!codeRegex.test(code)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_CODE', message: 'Verification code must be 6 digits' }
       });
     }
 
@@ -418,6 +488,35 @@ export const updateUser = async (req: AuthRequest, res: Response) => {
 
     const { nickname, avatar, language } = req.body;
 
+    // Nickname validation if provided
+    if (nickname) {
+      if (nickname.length < 2 || nickname.length > 50) {
+        return res.status(400).json({
+          success: false,
+          error: { code: 'INVALID_NICKNAME', message: 'Nickname must be between 2 and 50 characters' }
+        });
+      }
+    }
+
+    // Language validation if provided
+    if (language) {
+      const validLanguages = ['zh', 'en', 'ja', 'ko'];
+      if (!validLanguages.includes(language)) {
+        return res.status(400).json({
+          success: false,
+          error: { code: 'INVALID_LANGUAGE', message: 'Invalid language code' }
+        });
+      }
+    }
+
+    // Avatar validation if provided
+    if (avatar && typeof avatar !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_AVATAR', message: 'Avatar must be a string' }
+      });
+    }
+
     const user = await User.findByIdAndUpdate(
       id,
       { nickname, avatar, language },
@@ -454,6 +553,21 @@ export const changePassword = async (req: AuthRequest, res: Response) => {
       return res.status(403).json({
         success: false,
         error: { code: 'FORBIDDEN', message: 'You can only change your own password' }
+      });
+    }
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'MISSING_FIELDS', message: 'Current password and new password are required' }
+      });
+    }
+
+    // New password strength validation
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'WEAK_PASSWORD', message: 'New password must be at least 8 characters long' }
       });
     }
 
@@ -537,6 +651,64 @@ export const getMe = async (req: AuthRequest, res: Response) => {
     res.status(500).json({
       success: false,
       error: { code: 'INTERNAL_ERROR', message: 'Failed to get user info' }
+    });
+  }
+};
+
+export const updateUserPoints = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { points, exp } = req.body;
+    const userId = req.user?.userId;
+
+    if (userId !== id) {
+      return res.status(403).json({
+        success: false,
+        error: { code: 'FORBIDDEN', message: 'You can only update your own points' }
+      });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'USER_NOT_FOUND', message: 'User not found' }
+      });
+    }
+
+    // Update points and exp
+    if (points) {
+      user.points = Math.max(0, user.points + points);
+    }
+
+    if (exp) {
+      user.exp += exp;
+      
+      // Check if user level up
+      const newLevel = Math.floor(user.exp / 100) + 1;
+      if (newLevel > user.level) {
+        user.level = newLevel;
+      }
+    }
+
+    await user.save();
+
+    res.json({
+      success: true,
+      data: {
+        user: {
+          _id: user._id,
+          points: user.points,
+          exp: user.exp,
+          level: user.level
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Update user points error:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: 'Failed to update user points' }
     });
   }
 };

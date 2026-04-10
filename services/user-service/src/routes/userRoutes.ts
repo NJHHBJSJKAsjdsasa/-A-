@@ -13,7 +13,8 @@ import {
   updateUser,
   changePassword,
   deleteAccount,
-  getMe
+  getMe,
+  updateUserPoints
 } from '../controllers/userController';
 import { authenticate } from '../middleware/auth';
 
@@ -74,5 +75,7 @@ router.put(
 );
 
 router.delete('/:id', authenticate, deleteAccount);
+
+router.post('/:id/update-points', authenticate, updateUserPoints);
 
 export default router;

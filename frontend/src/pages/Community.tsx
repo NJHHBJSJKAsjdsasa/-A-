@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { fetchPosts } from '../store/slices/communitySlice';
 import { RootState } from '../store';
+import Loading from '../components/Loading';
 
 const Community = () => {
   const { t } = useTranslation();
@@ -22,7 +23,9 @@ const Community = () => {
       </div>
 
       {loading ? (
-        <div className="text-center py-12">{t('common.loading')}</div>
+        <div className="py-12">
+          <Loading message={t('common.loading')} variant="spinner" size="large" />
+        </div>
       ) : posts.length === 0 ? (
         <div className="text-center py-12 text-gray-500">{t('common.noData')}</div>
       ) : (

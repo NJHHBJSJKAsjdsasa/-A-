@@ -153,6 +153,29 @@ export const completeLesson = async (req: AuthRequest, res: Response) => {
     const { score, exerciseResults } = req.body;
     const userId = req.user?.userId;
 
+    // Score validation
+    if (score === undefined || typeof score !== 'number') {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'MISSING_SCORE', message: 'Score is required and must be a number' }
+      });
+    }
+
+    if (score < 0 || score > 100) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_SCORE', message: 'Score must be between 0 and 100' }
+      });
+    }
+
+    // Exercise results validation if provided
+    if (exerciseResults && !Array.isArray(exerciseResults)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_EXERCISE_RESULTS', message: 'Exercise results must be an array' }
+      });
+    }
+
     const lesson = await Lesson.findById(id);
     if (!lesson) {
       return res.status(404).json({
