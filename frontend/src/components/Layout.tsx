@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
 import { RootState } from '../store';
 import { logout } from '../store/slices/authSlice';
+import { getAvatarUrl } from '../utils/api';
 
 const Layout = () => {
   const { t, i18n } = useTranslation();
@@ -84,7 +85,7 @@ const Layout = () => {
                   </Link>
                   <Link to="/profile" className="flex items-center space-x-2">
                     <img
-                      src={user?.avatar || '/avatars/default.png'}
+                      src={getAvatarUrl(user?.avatar)}
                       alt={user?.nickname}
                       className="w-8 h-8 rounded-full"
                     />

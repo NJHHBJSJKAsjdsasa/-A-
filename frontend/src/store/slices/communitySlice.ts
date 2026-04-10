@@ -2,7 +2,9 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 interface Post {
   _id: string;
-  authorId: { _id: string; nickname: string; avatar: string };
+  authorId: string;
+  authorName: string;
+  authorAvatar: string;
   title: string;
   content: string;
   images: string[];

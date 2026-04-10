@@ -89,6 +89,14 @@ i18n
             badges: '徽章',
             leaderboard: '排行榜',
             achievements: '成就'
+          },
+          profile: {
+            uploadAvatar: '上传头像',
+            changeAvatar: '更换头像',
+            invalidAvatarType: '只支持图片文件（JPEG、PNG、GIF、WebP、SVG）',
+            avatarTooLarge: '头像文件大小不能超过5MB',
+            uploadFailed: '上传失败，请重试',
+            avatarHint: '支持 JPG、PNG、GIF、WebP、SVG 格式，最大 5MB'
           }
         }
       },
@@ -169,6 +177,14 @@ i18n
             badges: 'Badges',
             leaderboard: 'Leaderboard',
             achievements: 'Achievements'
+          },
+          profile: {
+            uploadAvatar: 'Upload Avatar',
+            changeAvatar: 'Change Avatar',
+            invalidAvatarType: 'Only image files (JPEG, PNG, GIF, WebP, SVG) are allowed',
+            avatarTooLarge: 'Avatar file size must be less than 5MB',
+            uploadFailed: 'Upload failed, please try again',
+            avatarHint: 'Supports JPG, PNG, GIF, WebP, SVG formats, max 5MB'
           }
         }
       },
@@ -249,6 +265,14 @@ i18n
             badges: 'バッジ',
             leaderboard: 'ランキング',
             achievements: '実績'
+          },
+          profile: {
+            uploadAvatar: 'アバターをアップロード',
+            changeAvatar: 'アバターを変更',
+            invalidAvatarType: '画像ファイル（JPEG、PNG、GIF、WebP、SVG）のみ対応',
+            avatarTooLarge: 'アバターのファイルサイズは5MB以下にしてください',
+            uploadFailed: 'アップロードに失敗しました。もう一度お試しください',
+            avatarHint: 'JPG、PNG、GIF、WebP、SVG形式対応、最大5MB'
           }
         }
       },
@@ -329,6 +353,14 @@ i18n
             badges: '배지',
             leaderboard: '랭킹',
             achievements: '성취'
+          },
+          profile: {
+            uploadAvatar: '아바타 업로드',
+            changeAvatar: '아바타 변경',
+            invalidAvatarType: '이미지 파일(JPEG, PNG, GIF, WebP, SVG)만 지원',
+            avatarTooLarge: '아바타 파일 크기는 5MB 이하여야 합니다',
+            uploadFailed: '업로드 실패, 다시 시도해주세요',
+            avatarHint: 'JPG, PNG, GIF, WebP, SVG 형식 지원, 최대 5MB'
           }
         }
       }

@@ -6,6 +6,8 @@ export interface AuthRequest extends Request {
   user?: {
     userId: string;
     email: string;
+    nickname: string;
+    avatar: string;
   };
 }
 
@@ -22,9 +24,9 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
   const token = authHeader.split(' ')[1];
   
   try {
-    const decoded = jwt.verify(token, config.jwt.secret) as { userId: string; email: string };
+    const decoded = jwt.verify(token, config.jwt.secret) as { userId: string; email: string; nickname: string; avatar: string };
     req.user = decoded;
-    next();
+    next()
   } catch (error) {
     return res.status(401).json({
       success: false,
@@ -43,10 +45,10 @@ export const optionalAuth = (req: AuthRequest, res: Response, next: NextFunction
   const token = authHeader.split(' ')[1];
   
   try {
-    const decoded = jwt.verify(token, config.jwt.secret) as { userId: string; email: string };
+    const decoded = jwt.verify(token, config.jwt.secret) as { userId: string; email: string; nickname: string; avatar: string };
     req.user = decoded;
   } catch (error) {
   }
-  
+
   next();
 };

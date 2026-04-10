@@ -32,13 +32,19 @@ const OAuthProviderSchema = new Schema<OAuthProvider>({
   providerId: { type: String, required: true }
 });
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const UserSchema = new Schema<IUser>({
   email: { 
     type: String, 
     required: true, 
     unique: true,
     lowercase: true,
-    trim: true
+    trim: true,
+    validate: {
+      validator: (value: string) => emailRegex.test(value),
+      message: 'Invalid email format'
+    }
   },
   passwordHash: { type: String, required: true },
   phone: { 

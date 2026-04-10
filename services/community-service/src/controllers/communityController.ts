@@ -81,11 +81,20 @@ export const createPost = async (req: AuthRequest, res: Response) => {
   try {
     const { title, content, images = [], videos = [], circleId, tags = [], language = 'zh' } = req.body;
     const authorId = req.user?.userId;
+    const authorName = req.user?.nickname;
+    const authorAvatar = req.user?.avatar;
 
     if (!title || !content) {
       return res.status(400).json({
         success: false,
         error: { code: 'MISSING_FIELDS', message: 'Title and content are required' }
+      });
+    }
+
+    if (!authorName) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'User information not available' }
       });
     }
 
@@ -140,6 +149,8 @@ export const createPost = async (req: AuthRequest, res: Response) => {
 
     const post = new Post({
       authorId,
+      authorName,
+      authorAvatar: authorAvatar || '',
       title,
       content,
       images,
@@ -355,11 +366,20 @@ export const createComment = async (req: AuthRequest, res: Response) => {
     const { postId } = req.params;
     const { content, parentId } = req.body;
     const authorId = req.user?.userId;
+    const authorName = req.user?.nickname;
+    const authorAvatar = req.user?.avatar;
 
     if (!content) {
       return res.status(400).json({
         success: false,
         error: { code: 'MISSING_CONTENT', message: 'Comment content is required' }
+      });
+    }
+
+    if (!authorName) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'User information not available' }
       });
     }
 
@@ -409,6 +429,8 @@ export const createComment = async (req: AuthRequest, res: Response) => {
     const comment = new Comment({
       postId,
       authorId,
+      authorName,
+      authorAvatar: authorAvatar || '',
       parentId,
       content
     });

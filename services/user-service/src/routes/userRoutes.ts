@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
+import multer from 'multer';
 import {
   register,
   login,
@@ -14,9 +15,12 @@ import {
   changePassword,
   deleteAccount,
   getMe,
-  updateUserPoints
+  updateUserPoints,
+  uploadAvatar
 } from '../controllers/userController';
 import { authenticate } from '../middleware/auth';
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const router = Router();
 
@@ -77,5 +81,7 @@ router.put(
 router.delete('/:id', authenticate, deleteAccount);
 
 router.post('/:id/update-points', authenticate, updateUserPoints);
+
+router.post('/:id/avatar', authenticate, upload.single('avatar'), uploadAvatar);
 
 export default router;

@@ -1,24 +1,32 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { RootState } from '../store';
+import { setUser } from '../store/slices/authSlice';
+import AvatarUpload from '../components/AvatarUpload';
 
 const Profile = () => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
+
+  const handleAvatarChange = (avatarUrl: string) => {
+    if (user) {
+      dispatch(setUser({ ...user, avatar: avatarUrl }));
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
       <div className="card mb-8">
-        <div className="flex items-center space-x-6">
-          <img
-            src={user?.avatar || '/avatars/default.png'}
-            alt={user?.nickname}
-            className="w-24 h-24 rounded-full"
+        <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
+          <AvatarUpload 
+            currentAvatar={user?.avatar} 
+            onAvatarChange={handleAvatarChange}
           />
-          <div>
+          <div className="text-center md:text-left">
             <h1 className="text-2xl font-bold text-gray-800">{user?.nickname}</h1>
             <p className="text-gray-500">{user?.email}</p>
-            <div className="flex items-center space-x-4 mt-2">
+            <div className="flex items-center justify-center md:justify-start space-x-4 mt-2">
               <span className="text-sm text-gray-600">{t('achievement.level')}: {user?.level || 1}</span>
               <span className="text-sm text-gray-600">{t('achievement.exp')}: {user?.exp || 0}</span>
               <span className="text-sm text-gray-600">{t('achievement.points')}: {user?.points || 0}</span>

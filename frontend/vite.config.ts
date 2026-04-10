@@ -16,6 +16,10 @@ export default defineConfig({
         target: process.env.VITE_API_URL || 'http://localhost:8080',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '/api')
+      },
+      '/avatars': {
+        target: process.env.VITE_API_URL || 'http://localhost:8080',
+        changeOrigin: true
       }
     }
   }

@@ -3,6 +3,7 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
+import path from 'path';
 import { config } from '@doraemon/shared';
 import routes from './routes';
 
@@ -17,13 +18,17 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 
+// Serve static avatar files BEFORE helmet to avoid CSP issues
+app.use('/avatars', express.static('/opt/doraemon-platform/frontend/public/avatars'));
+app.use('/avatars/uploads', express.static('/opt/doraemon-platform/frontend/public/avatars/uploads'));
+
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "*.gravatar.com"],
+      imgSrc: ["'self'", "data:", "*.gravatar.com", "*"],
       fontSrc: ["'self'"],
       connectSrc: ["'self'"],
       objectSrc: ["'none'"],
@@ -32,7 +37,7 @@ app.use(helmet({
   },
   crossOriginEmbedderPolicy: false,
   crossOriginOpenerPolicy: { policy: "same-origin" },
-  crossOriginResourcePolicy: { policy: "same-origin" },
+  crossOriginResourcePolicy: { policy: "cross-origin" },
   dnsPrefetchControl: { allow: false },
   expectCt: {
     maxAge: 86400,
@@ -60,7 +65,7 @@ app.use(morgan('combined'));
 // Rate limiters for different types of requests
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 100,
   standardHeaders: true,
   legacyHeaders: false,
   message: {

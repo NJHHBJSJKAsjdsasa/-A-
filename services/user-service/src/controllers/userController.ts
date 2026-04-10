@@ -5,9 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { User } from '../models/User';
 import { AuthRequest } from '../middleware/auth';
 import { config } from '@doraemon/shared';
+import { getErrorMessage } from '../utils/messages';
 
-const generateTokens = (userId: string, email: string) => {
-  const accessToken = jwt.sign({ userId, email }, config.jwt.secret, { expiresIn: config.jwt.expiresIn });
+const generateTokens = (userId: string, email: string, nickname: string, avatar: string) => {
+  const accessToken = jwt.sign({ userId, email, nickname, avatar }, config.jwt.secret, { expiresIn: config.jwt.expiresIn });
   const refreshToken = jwt.sign({ userId, email }, config.jwt.refreshSecret, { expiresIn: config.jwt.refreshExpiresIn });
   return { accessToken, refreshToken };
 };
@@ -19,7 +20,7 @@ export const register = async (req: Request, res: Response) => {
     if (!email || !password || !nickname) {
       return res.status(400).json({
         success: false,
-        error: { code: 'MISSING_FIELDS', message: 'Email, password and nickname are required' }
+        error: { code: 'MISSING_FIELDS', message: getErrorMessage('MISSING_FIELDS', language) }
       });
     }
 
@@ -28,7 +29,7 @@ export const register = async (req: Request, res: Response) => {
     if (!emailRegex.test(email)) {
       return res.status(400).json({
         success: false,
-        error: { code: 'INVALID_EMAIL', message: 'Invalid email format' }
+        error: { code: 'INVALID_EMAIL', message: getErrorMessage('INVALID_EMAIL', language) }
       });
     }
 
@@ -36,7 +37,7 @@ export const register = async (req: Request, res: Response) => {
     if (password.length < 8) {
       return res.status(400).json({
         success: false,
-        error: { code: 'WEAK_PASSWORD', message: 'Password must be at least 8 characters long' }
+        error: { code: 'WEAK_PASSWORD', message: getErrorMessage('WEAK_PASSWORD', language) }
       });
     }
 
@@ -44,7 +45,7 @@ export const register = async (req: Request, res: Response) => {
     if (nickname.length < 2 || nickname.length > 50) {
       return res.status(400).json({
         success: false,
-        error: { code: 'INVALID_NICKNAME', message: 'Nickname must be between 2 and 50 characters' }
+        error: { code: 'INVALID_NICKNAME', message: getErrorMessage('INVALID_NICKNAME', language) }
       });
     }
 
@@ -53,7 +54,7 @@ export const register = async (req: Request, res: Response) => {
     if (!validLanguages.includes(language)) {
       return res.status(400).json({
         success: false,
-        error: { code: 'INVALID_LANGUAGE', message: 'Invalid language code' }
+        error: { code: 'INVALID_LANGUAGE', message: getErrorMessage('INVALID_LANGUAGE', language) }
       });
     }
 
@@ -61,23 +62,27 @@ export const register = async (req: Request, res: Response) => {
     if (existingUser) {
       return res.status(409).json({
         success: false,
-        error: { code: 'EMAIL_EXISTS', message: 'Email already registered' }
+        error: { code: 'EMAIL_EXISTS', message: getErrorMessage('EMAIL_EXISTS', language) }
       });
     }
 
     const passwordHash = await bcrypt.hash(password, config.bcrypt.saltRounds);
+    
+    // 根据昵称首字母生成头像
+    const firstChar = nickname.charAt(0).toUpperCase();
+    const avatarFile = /^[A-Z0-9]$/.test(firstChar) ? `${firstChar}.svg` : 'default.svg';
     
     const user = new User({
       email,
       passwordHash,
       nickname,
       language,
-      avatar: `/avatars/${Math.floor(Math.random() * 10) + 1}.png`
+      avatar: `/avatars/${avatarFile}`
     });
 
     await user.save();
 
-    const { accessToken, refreshToken } = generateTokens(user._id.toString(), user.email);
+    const { accessToken, refreshToken } = generateTokens(user._id.toString(), user.email, user.nickname, user.avatar);
 
     res.status(201).json({
       success: true,
@@ -98,21 +103,22 @@ export const register = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Register error:', error);
+    const language = req.body.language || 'zh';
     res.status(500).json({
       success: false,
-      error: { code: 'INTERNAL_ERROR', message: 'Registration failed' }
+      error: { code: 'INTERNAL_ERROR', message: getErrorMessage('INTERNAL_ERROR', language) }
     });
   }
 };
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, language = 'zh' } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        error: { code: 'MISSING_FIELDS', message: 'Email and password are required' }
+        error: { code: 'MISSING_FIELDS', message: getErrorMessage('MISSING_FIELDS', language) }
       });
     }
 
@@ -121,7 +127,7 @@ export const login = async (req: Request, res: Response) => {
     if (!emailRegex.test(email)) {
       return res.status(400).json({
         success: false,
-        error: { code: 'INVALID_EMAIL', message: 'Invalid email format' }
+        error: { code: 'INVALID_EMAIL', message: getErrorMessage('INVALID_EMAIL', language) }
       });
     }
 
@@ -129,7 +135,7 @@ export const login = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' }
+        error: { code: 'INVALID_CREDENTIALS', message: getErrorMessage('INVALID_CREDENTIALS', language) }
       });
     }
 
@@ -137,11 +143,11 @@ export const login = async (req: Request, res: Response) => {
     if (!isValidPassword) {
       return res.status(401).json({
         success: false,
-        error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' }
+        error: { code: 'INVALID_CREDENTIALS', message: getErrorMessage('INVALID_CREDENTIALS', language) }
       });
     }
 
-    const { accessToken, refreshToken } = generateTokens(user._id.toString(), user.email);
+    const { accessToken, refreshToken } = generateTokens(user._id.toString(), user.email, user.nickname, user.avatar);
 
     res.json({
       success: true,
@@ -164,7 +170,7 @@ export const login = async (req: Request, res: Response) => {
     console.error('Login error:', error);
     res.status(500).json({
       success: false,
-      error: { code: 'INTERNAL_ERROR', message: 'Login failed' }
+      error: { code: 'INTERNAL_ERROR', message: getErrorMessage('LOGIN_FAILED', language) }
     });
   }
 };
@@ -190,7 +196,7 @@ export const refreshToken = async (req: Request, res: Response) => {
       });
     }
 
-    const tokens = generateTokens(user._id.toString(), user.email);
+    const tokens = generateTokens(user._id.toString(), user.email, user.nickname, user.avatar);
 
     res.json({
       success: true,
@@ -256,7 +262,7 @@ export const oauthLogin = async (req: Request, res: Response) => {
       await user.save();
     }
 
-    const { accessToken, refreshToken } = generateTokens(user._id.toString(), user.email);
+    const { accessToken, refreshToken } = generateTokens(user._id.toString(), user.email, user.nickname, user.avatar);
 
     res.json({
       success: true,
@@ -709,6 +715,110 @@ export const updateUserPoints = async (req: AuthRequest, res: Response) => {
     res.status(500).json({
       success: false,
       error: { code: 'INTERNAL_ERROR', message: 'Failed to update user points' }
+    });
+  }
+};
+
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5MB
+
+export const uploadAvatar = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'NO_FILE', message: 'No avatar file uploaded' }
+      });
+    }
+
+    // Validate file type
+    if (!ALLOWED_IMAGE_TYPES.includes(file.mimetype)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_TYPE', message: 'Only image files (JPEG, PNG, GIF, WebP, SVG) are allowed' }
+      });
+    }
+
+    // Validate file size
+    if (file.size > MAX_AVATAR_SIZE) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'FILE_TOO_LARGE', message: 'Avatar file size must be less than 5MB' }
+      });
+    }
+
+    // Import modules
+    const fs = await import('fs');
+    const path = await import('path');
+    const { fileURLToPath } = await import('url');
+    
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const avatarDir = path.join(__dirname, '../../../../frontend/public/avatars/uploads');
+    
+    // Ensure upload directory exists
+    if (!fs.existsSync(avatarDir)) {
+      fs.mkdirSync(avatarDir, { recursive: true });
+    }
+
+    // Get current user to find old avatar
+    const currentUser = await User.findById(userId);
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'USER_NOT_FOUND', message: 'User not found' }
+      });
+    }
+
+    // Delete old avatar if it exists and is in uploads directory
+    if (currentUser.avatar && currentUser.avatar.includes('/avatars/uploads/')) {
+      try {
+        const oldFilename = currentUser.avatar.split('/').pop();
+        if (oldFilename) {
+          const oldFilePath = path.join(avatarDir, oldFilename);
+          if (fs.existsSync(oldFilePath)) {
+            fs.unlinkSync(oldFilePath);
+            console.log('Deleted old avatar:', oldFilename);
+          }
+        }
+      } catch (deleteError) {
+        console.error('Failed to delete old avatar:', deleteError);
+        // Continue with upload even if delete fails
+      }
+    }
+
+    // Generate unique filename
+    const ext = file.originalname.split('.').pop() || 'png';
+    const timestamp = Date.now();
+    const filename = `${userId}_${timestamp}.${ext}`;
+    
+    const filePath = path.join(avatarDir, filename);
+    fs.writeFileSync(filePath, file.buffer);
+
+    // Update user avatar URL
+    const avatarUrl = `/avatars/uploads/${filename}`;
+    
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { avatar: avatarUrl },
+      { new: true, runValidators: true }
+    ).select('-passwordHash');
+
+    res.json({
+      success: true,
+      data: {
+        avatar: user?.avatar,
+        message: 'Avatar uploaded successfully'
+      }
+    });
+  } catch (error) {
+    console.error('Upload avatar error:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'INTERNAL_ERROR', message: 'Failed to upload avatar' }
     });
   }
 };

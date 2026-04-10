@@ -3,6 +3,8 @@ export interface AuthRequest extends Request {
     user?: {
         userId: string;
         email: string;
+        nickname: string;
+        avatar: string;
     };
 }
 export declare const authenticate: (req: AuthRequest, res: Response, next: NextFunction) => Response<any, Record<string, any>> | undefined;

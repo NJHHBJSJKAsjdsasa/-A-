@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { fetchPosts } from '../store/slices/communitySlice';
 import { RootState } from '../store';
+import { getAvatarUrl } from '../utils/api';
 import Loading from '../components/Loading';
 
 const Community = () => {
@@ -36,8 +37,8 @@ const Community = () => {
               <p className="text-gray-600 mb-4 line-clamp-2">{post.content}</p>
               <div className="flex items-center justify-between text-sm text-gray-500">
                 <div className="flex items-center space-x-4">
-                  <img src={post.authorId?.avatar || '/avatars/default.png'} alt="" className="w-6 h-6 rounded-full" />
-                  <span>{post.authorId?.nickname}</span>
+                  <img src={getAvatarUrl(post.authorAvatar)} alt="" className="w-6 h-6 rounded-full" />
+                  <span>{post.authorName || 'Unknown'}</span>
                 </div>
                 <div className="flex items-center space-x-4">
                   <span>❤️ {post.likes}</span>

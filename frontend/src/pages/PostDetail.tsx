@@ -2,16 +2,15 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Heart, MessageCircle, Share2, ArrowLeft } from 'lucide-react';
+import { getAvatarUrl } from '../utils/api';
 
 interface Post {
   _id: string;
   title: string;
   content: string;
-  authorId: {
-    _id: string;
-    nickname: string;
-    avatar: string;
-  };
+  authorId: string;
+  authorName: string;
+  authorAvatar: string;
   circleId: string;
   likes: number;
   comments: number;
@@ -22,11 +21,9 @@ interface Post {
 interface Comment {
   _id: string;
   content: string;
-  authorId: {
-    _id: string;
-    nickname: string;
-    avatar: string;
-  };
+  authorId: string;
+  authorName: string;
+  authorAvatar: string;
   createdAt: string;
 }
 
@@ -178,12 +175,12 @@ const PostDetail = () => {
         {/* Author Info */}
         <div className="flex items-center mb-6">
           <img
-            src={post.authorId?.avatar || '/avatars/1.png'}
-            alt={post.authorId?.nickname}
+            src={getAvatarUrl(post.authorAvatar)}
+            alt={post.authorName}
             className="w-12 h-12 rounded-full mr-4"
           />
           <div>
-            <h3 className="font-semibold text-gray-900">{post.authorId?.nickname || 'Anonymous'}</h3>
+            <h3 className="font-semibold text-gray-900">{post.authorName || 'Anonymous'}</h3>
             <p className="text-sm text-gray-500">{formatDate(post.createdAt)}</p>
           </div>
         </div>
@@ -255,14 +252,14 @@ const PostDetail = () => {
             comments.map((comment) => (
               <div key={comment._id} className="flex space-x-4">
                 <img
-                  src={comment.authorId?.avatar || '/avatars/1.png'}
-                  alt={comment.authorId?.nickname}
+                  src={getAvatarUrl(comment.authorAvatar)}
+                  alt={comment.authorName}
                   className="w-10 h-10 rounded-full"
                 />
                 <div className="flex-1">
                   <div className="bg-gray-50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-gray-900">{comment.authorId?.nickname || 'Anonymous'}</span>
+                      <span className="font-semibold text-gray-900">{comment.authorName || 'Anonymous'}</span>
                       <span className="text-sm text-gray-500">{formatDate(comment.createdAt)}</span>
                     </div>
                     <p className="text-gray-700">{comment.content}</p>

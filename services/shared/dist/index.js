@@ -17,4 +17,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./auth"), exports);
 __exportStar(require("./config"), exports);
 __exportStar(require("./types"), exports);
+__exportStar(require("./communication"), exports);
 //# sourceMappingURL=index.js.map
