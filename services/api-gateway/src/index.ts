@@ -89,51 +89,83 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Auth routes
+// Auth routes - no auth required
 app.use('/auth', createServiceProxy(USER_SERVICE, { '^/auth': '' }));
 app.use('/api/auth', createServiceProxy(USER_SERVICE, { '^/api/auth': '' }));
 
-// User routes
+// User routes - require auth
 app.use('/users', authMiddleware, createServiceProxy(USER_SERVICE));
 app.use('/api/users', authMiddleware, createServiceProxy(USER_SERVICE, { '^/api/users': '/users' }));
 
-// Community routes - GET routes (no auth required)
-app.use('/posts', createServiceProxy(COMMUNITY_SERVICE));
-app.use('/api/posts', createServiceProxy(COMMUNITY_SERVICE, { '^/api/posts': '/posts' }));
-app.use('/comments', createServiceProxy(COMMUNITY_SERVICE));
-app.use('/api/comments', createServiceProxy(COMMUNITY_SERVICE, { '^/api/comments': '/comments' }));
-app.use('/circles', createServiceProxy(COMMUNITY_SERVICE));
-app.use('/api/circles', createServiceProxy(COMMUNITY_SERVICE, { '^/api/circles': '/circles' }));
+// Community routes - GET requests (no auth required)
+app.get('/posts', createServiceProxy(COMMUNITY_SERVICE));
+app.get('/api/posts', createServiceProxy(COMMUNITY_SERVICE, { '^/api/posts': '/posts' }));
+app.get('/posts/:id', createServiceProxy(COMMUNITY_SERVICE));
+app.get('/api/posts/:id', createServiceProxy(COMMUNITY_SERVICE, { '^/api/posts': '/posts' }));
+app.get('/comments', createServiceProxy(COMMUNITY_SERVICE));
+app.get('/api/comments', createServiceProxy(COMMUNITY_SERVICE, { '^/api/comments': '/comments' }));
+app.get('/circles', createServiceProxy(COMMUNITY_SERVICE));
+app.get('/api/circles', createServiceProxy(COMMUNITY_SERVICE, { '^/api/circles': '/circles' }));
+app.get('/circles/:id', createServiceProxy(COMMUNITY_SERVICE));
+app.get('/api/circles/:id', createServiceProxy(COMMUNITY_SERVICE, { '^/api/circles': '/circles' }));
 
-// Protected community routes
-app.use('/posts', authMiddleware, createServiceProxy(COMMUNITY_SERVICE));
-app.use('/api/posts', authMiddleware, createServiceProxy(COMMUNITY_SERVICE, { '^/api/posts': '/posts' }));
+// Community routes - GET comments (no auth required)
+app.get('/posts/:id/comments', createServiceProxy(COMMUNITY_SERVICE));
+app.get('/api/posts/:id/comments', createServiceProxy(COMMUNITY_SERVICE, { '^/api/posts': '/posts' }));
 
-// Message routes
+// Community routes - POST/PUT/DELETE (require auth)
+app.post('/posts', authMiddleware, createServiceProxy(COMMUNITY_SERVICE));
+app.post('/api/posts', authMiddleware, createServiceProxy(COMMUNITY_SERVICE, { '^/api/posts': '/posts' }));
+app.put('/posts/:id', authMiddleware, createServiceProxy(COMMUNITY_SERVICE));
+app.put('/api/posts/:id', authMiddleware, createServiceProxy(COMMUNITY_SERVICE, { '^/api/posts': '/posts' }));
+app.delete('/posts/:id', authMiddleware, createServiceProxy(COMMUNITY_SERVICE));
+app.delete('/api/posts/:id', authMiddleware, createServiceProxy(COMMUNITY_SERVICE, { '^/api/posts': '/posts' }));
+app.post('/posts/:id/like', authMiddleware, createServiceProxy(COMMUNITY_SERVICE));
+app.post('/api/posts/:id/like', authMiddleware, createServiceProxy(COMMUNITY_SERVICE, { '^/api/posts': '/posts' }));
+app.post('/posts/:id/comments', authMiddleware, createServiceProxy(COMMUNITY_SERVICE));
+app.post('/api/posts/:id/comments', authMiddleware, createServiceProxy(COMMUNITY_SERVICE, { '^/api/posts': '/posts' }));
+app.delete('/comments/:id', authMiddleware, createServiceProxy(COMMUNITY_SERVICE));
+app.delete('/api/comments/:id', authMiddleware, createServiceProxy(COMMUNITY_SERVICE, { '^/api/comments': '/comments' }));
+app.post('/circles', authMiddleware, createServiceProxy(COMMUNITY_SERVICE));
+app.post('/api/circles', authMiddleware, createServiceProxy(COMMUNITY_SERVICE, { '^/api/circles': '/circles' }));
+app.put('/circles/:id', authMiddleware, createServiceProxy(COMMUNITY_SERVICE));
+app.put('/api/circles/:id', authMiddleware, createServiceProxy(COMMUNITY_SERVICE, { '^/api/circles': '/circles' }));
+app.delete('/circles/:id', authMiddleware, createServiceProxy(COMMUNITY_SERVICE));
+app.delete('/api/circles/:id', authMiddleware, createServiceProxy(COMMUNITY_SERVICE, { '^/api/circles': '/circles' }));
+app.post('/circles/:id/join', authMiddleware, createServiceProxy(COMMUNITY_SERVICE));
+app.post('/api/circles/:id/join', authMiddleware, createServiceProxy(COMMUNITY_SERVICE, { '^/api/circles': '/circles' }));
+
+// Message routes - require auth
 app.use('/messages', authMiddleware, createServiceProxy(MESSAGE_SERVICE));
 app.use('/api/messages', authMiddleware, createServiceProxy(MESSAGE_SERVICE, { '^/api/messages': '/messages' }));
 app.use('/conversations', authMiddleware, createServiceProxy(MESSAGE_SERVICE));
 app.use('/api/conversations', authMiddleware, createServiceProxy(MESSAGE_SERVICE, { '^/api/conversations': '/conversations' }));
 
-// Achievement routes
-app.use('/badges', createServiceProxy(ACHIEVEMENT_SERVICE));
-app.use('/api/badges', createServiceProxy(ACHIEVEMENT_SERVICE, { '^/api/badges': '/badges' }));
-app.use('/achievements', createServiceProxy(ACHIEVEMENT_SERVICE));
-app.use('/api/achievements', createServiceProxy(ACHIEVEMENT_SERVICE, { '^/api/achievements': '/achievements' }));
-app.use('/leaderboard', createServiceProxy(ACHIEVEMENT_SERVICE));
-app.use('/api/leaderboard', createServiceProxy(ACHIEVEMENT_SERVICE, { '^/api/leaderboard': '/leaderboard' }));
+// Achievement routes - GET (no auth)
+app.get('/badges', createServiceProxy(ACHIEVEMENT_SERVICE));
+app.get('/api/badges', createServiceProxy(ACHIEVEMENT_SERVICE, { '^/api/badges': '/badges' }));
+app.get('/achievements', createServiceProxy(ACHIEVEMENT_SERVICE));
+app.get('/api/achievements', createServiceProxy(ACHIEVEMENT_SERVICE, { '^/api/achievements': '/achievements' }));
+app.get('/leaderboard', createServiceProxy(ACHIEVEMENT_SERVICE));
+app.get('/api/leaderboard', createServiceProxy(ACHIEVEMENT_SERVICE, { '^/api/leaderboard': '/leaderboard' }));
+
+// Achievement routes - POST/PUT/DELETE (require auth)
 app.use('/points', authMiddleware, createServiceProxy(ACHIEVEMENT_SERVICE));
 app.use('/api/points', authMiddleware, createServiceProxy(ACHIEVEMENT_SERVICE, { '^/api/points': '/points' }));
 
-// Learning routes
-app.use('/courses', createServiceProxy(LEARNING_SERVICE));
-app.use('/api/courses', createServiceProxy(LEARNING_SERVICE, { '^/api/courses': '/courses' }));
-app.use('/lessons', createServiceProxy(LEARNING_SERVICE));
-app.use('/api/lessons', createServiceProxy(LEARNING_SERVICE, { '^/api/lessons': '/lessons' }));
+// Learning routes - GET (no auth)
+app.get('/courses', createServiceProxy(LEARNING_SERVICE));
+app.get('/api/courses', createServiceProxy(LEARNING_SERVICE, { '^/api/courses': '/courses' }));
+app.get('/courses/:id', createServiceProxy(LEARNING_SERVICE));
+app.get('/api/courses/:id', createServiceProxy(LEARNING_SERVICE, { '^/api/courses': '/courses' }));
+app.get('/lessons/:id', createServiceProxy(LEARNING_SERVICE));
+app.get('/api/lessons/:id', createServiceProxy(LEARNING_SERVICE, { '^/api/lessons': '/lessons' }));
+
+// Learning routes - POST/PUT/DELETE (require auth)
 app.use('/learning', authMiddleware, createServiceProxy(LEARNING_SERVICE));
 app.use('/api/learning', authMiddleware, createServiceProxy(LEARNING_SERVICE, { '^/api/learning': '/learning' }));
 
-// File routes
+// File routes - require auth
 app.use('/files', authMiddleware, createServiceProxy(FILE_SERVICE));
 app.use('/api/files', authMiddleware, createServiceProxy(FILE_SERVICE, { '^/api/files': '/files' }));
 
