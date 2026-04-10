@@ -16,9 +16,9 @@ const Leaderboard = () => {
       <h1 className="text-3xl font-bold text-gray-800 mb-8">{t('achievement.leaderboard')}</h1>
 
       <div className="flex space-x-4 mb-8">
-        <button className="btn-primary">经验值</button>
-        <button className="btn-secondary">积分</button>
-        <button className="btn-secondary">学习</button>
+        <button className="btn-primary">{t('leaderboard.experience')}</button>
+        <button className="btn-secondary">{t('leaderboard.points')}</button>
+        <button className="btn-secondary">{t('leaderboard.learning')}</button>
       </div>
 
       <div className="card">
@@ -26,8 +26,8 @@ const Leaderboard = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b">
-                <th className="text-left py-4 px-4">排名</th>
-                <th className="text-left py-4 px-4">用户</th>
+                <th className="text-left py-4 px-4">{t('leaderboard.rank')}</th>
+                <th className="text-left py-4 px-4">{t('leaderboard.user')}</th>
                 <th className="text-left py-4 px-4">{t('achievement.level')}</th>
                 <th className="text-left py-4 px-4">{t('achievement.exp')}</th>
               </tr>

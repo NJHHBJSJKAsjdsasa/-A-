@@ -96,7 +96,61 @@ i18n
             invalidAvatarType: '只支持图片文件（JPEG、PNG、GIF、WebP、SVG）',
             avatarTooLarge: '头像文件大小不能超过5MB',
             uploadFailed: '上传失败，请重试',
-            avatarHint: '支持 JPG、PNG、GIF、WebP、SVG 格式，最大 5MB'
+            avatarHint: '支持 JPG、PNG、GIF、WebP、SVG 格式，最大 5MB',
+            noCourses: '暂无报名课程',
+            noPosts: '暂无发布的帖子',
+            noCircles: '暂无加入的圈子'
+          },
+          messages: {
+            messageList: '消息列表',
+            officialAccount: '哆啦A梦官方',
+            welcomeMessage: '欢迎来到哆啦A梦平台！',
+            chatWindow: '聊天窗口',
+            selectConversation: '选择一个对话开始聊天',
+            inputMessage: '输入消息...',
+            send: '发送'
+          },
+          home: {
+            platformFeatures: '平台特色',
+            hotCircles: '热门圈子',
+            recommendedCourses: '推荐课程',
+            joinNow: '立即加入',
+            browseCommunity: '浏览社区',
+            multilingualSupport: '多语言支持',
+            communityExchange: '社区交流',
+            languageLearning: '语言学习',
+            achievementSystem: '成就系统',
+            multilingualDescription: '支持中文、英语、日语、韩语四种语言',
+            communityDescription: '发布帖子、评论互动、加入兴趣圈子',
+            learningDescription: '丰富的语言课程，轻松学习新语言',
+            achievementDescription: '等级徽章、积分奖励、排行榜竞争',
+            heroTitle: '连接全球哆啦A梦粉丝，一起学习、交流、成长',
+            members: '成员',
+            posts: '帖子',
+            viewMoreCircles: '查看更多圈子 →',
+            viewMoreCourses: '查看更多课程 →',
+            enrolled: '人已报名'
+          },
+          leaderboard: {
+            experience: '经验值',
+            points: '积分',
+            learning: '学习',
+            rank: '排名',
+            user: '用户'
+          },
+          login: {
+            rememberMe: '记住我',
+            orLoginWith: '或使用第三方登录',
+            wechat: '微信',
+            weibo: '微博'
+          },
+          course: {
+            courseDetail: '课程详情',
+            loadingCourse: '课程内容加载中...'
+          },
+          circle: {
+            circleDetail: '圈子详情',
+            loadingCircle: '圈子内容加载中...'
           }
         }
       },
@@ -184,7 +238,61 @@ i18n
             invalidAvatarType: 'Only image files (JPEG, PNG, GIF, WebP, SVG) are allowed',
             avatarTooLarge: 'Avatar file size must be less than 5MB',
             uploadFailed: 'Upload failed, please try again',
-            avatarHint: 'Supports JPG, PNG, GIF, WebP, SVG formats, max 5MB'
+            avatarHint: 'Supports JPG, PNG, GIF, WebP, SVG formats, max 5MB',
+            noCourses: 'No enrolled courses',
+            noPosts: 'No posts published',
+            noCircles: 'No circles joined'
+          },
+          messages: {
+            messageList: 'Message List',
+            officialAccount: 'Doraemon Official',
+            welcomeMessage: 'Welcome to Doraemon Platform!',
+            chatWindow: 'Chat Window',
+            selectConversation: 'Select a conversation to start chatting',
+            inputMessage: 'Type a message...',
+            send: 'Send'
+          },
+          home: {
+            platformFeatures: 'Platform Features',
+            hotCircles: 'Hot Circles',
+            recommendedCourses: 'Recommended Courses',
+            joinNow: 'Join Now',
+            browseCommunity: 'Browse Community',
+            multilingualSupport: 'Multilingual Support',
+            communityExchange: 'Community Exchange',
+            languageLearning: 'Language Learning',
+            achievementSystem: 'Achievement System',
+            multilingualDescription: 'Supports Chinese, English, Japanese, and Korean',
+            communityDescription: 'Post, comment, and join interest circles',
+            learningDescription: 'Rich language courses for easy learning',
+            achievementDescription: 'Level badges, points rewards, leaderboard competition',
+            heroTitle: 'Connect Doraemon fans worldwide to learn, exchange, and grow together',
+            members: 'Members',
+            posts: 'Posts',
+            viewMoreCircles: 'View more circles →',
+            viewMoreCourses: 'View more courses →',
+            enrolled: 'people enrolled'
+          },
+          leaderboard: {
+            experience: 'Experience',
+            points: 'Points',
+            learning: 'Learning',
+            rank: 'Rank',
+            user: 'User'
+          },
+          login: {
+            rememberMe: 'Remember me',
+            orLoginWith: 'Or login with',
+            wechat: 'WeChat',
+            weibo: 'Weibo'
+          },
+          course: {
+            courseDetail: 'Course Detail',
+            loadingCourse: 'Loading course content...'
+          },
+          circle: {
+            circleDetail: 'Circle Detail',
+            loadingCircle: 'Loading circle content...'
           }
         }
       },
@@ -272,7 +380,61 @@ i18n
             invalidAvatarType: '画像ファイル（JPEG、PNG、GIF、WebP、SVG）のみ対応',
             avatarTooLarge: 'アバターのファイルサイズは5MB以下にしてください',
             uploadFailed: 'アップロードに失敗しました。もう一度お試しください',
-            avatarHint: 'JPG、PNG、GIF、WebP、SVG形式対応、最大5MB'
+            avatarHint: 'JPG、PNG、GIF、WebP、SVG形式対応、最大5MB',
+            noCourses: '登録コースがありません',
+            noPosts: '投稿がありません',
+            noCircles: 'サークルに参加していません'
+          },
+          messages: {
+            messageList: 'メッセージリスト',
+            officialAccount: 'ドラえもん公式',
+            welcomeMessage: 'ドラえもんプラットフォームへようこそ！',
+            chatWindow: 'チャットウィンドウ',
+            selectConversation: '会話を選択してチャットを開始',
+            inputMessage: 'メッセージを入力...',
+            send: '送信'
+          },
+          home: {
+            platformFeatures: 'プラットフォームの特徴',
+            hotCircles: '人気サークル',
+            recommendedCourses: 'おすすめコース',
+            joinNow: '今すぐ参加',
+            browseCommunity: 'コミュニティを探索',
+            multilingualSupport: '多言語サポート',
+            communityExchange: 'コミュニティ交流',
+            languageLearning: '言語学習',
+            achievementSystem: 'アチーブメントシステム',
+            multilingualDescription: '中国語、英語、日本語、韓国語に対応',
+            communityDescription: '投稿、コメント、興味のサークルに参加',
+            learningDescription: '豊富な言語コースで簡単学習',
+            achievementDescription: 'レベルバッジ、ポイント報酬、ランキング競争',
+            heroTitle: '世界中のドラえもんファンをつなぎ、一緒に学び、交流し、成長',
+            members: 'メンバー',
+            posts: '投稿',
+            viewMoreCircles: 'もっとサークルを見る →',
+            viewMoreCourses: 'もっとコースを見る →',
+            enrolled: '人が登録'
+          },
+          leaderboard: {
+            experience: '経験値',
+            points: 'ポイント',
+            learning: '学習',
+            rank: 'ランク',
+            user: 'ユーザー'
+          },
+          login: {
+            rememberMe: 'ログインを記憶',
+            orLoginWith: 'または以下でログイン',
+            wechat: 'WeChat',
+            weibo: 'Weibo'
+          },
+          course: {
+            courseDetail: 'コース詳細',
+            loadingCourse: 'コースコンテンツを読み込み中...'
+          },
+          circle: {
+            circleDetail: 'サークル詳細',
+            loadingCircle: 'サークルコンテンツを読み込み中...'
           }
         }
       },
@@ -360,7 +522,61 @@ i18n
             invalidAvatarType: '이미지 파일(JPEG, PNG, GIF, WebP, SVG)만 지원',
             avatarTooLarge: '아바타 파일 크기는 5MB 이하여야 합니다',
             uploadFailed: '업로드 실패, 다시 시도해주세요',
-            avatarHint: 'JPG, PNG, GIF, WebP, SVG 형식 지원, 최대 5MB'
+            avatarHint: 'JPG, PNG, GIF, WebP, SVG 형식 지원, 최대 5MB',
+            noCourses: '등록된 코스가 없습니다',
+            noPosts: '게시물이 없습니다',
+            noCircles: '가입한 서클이 없습니다'
+          },
+          messages: {
+            messageList: '메시지 목록',
+            officialAccount: '도라에몽 공식',
+            welcomeMessage: '도라에몽 플랫폼에 오신 것을 환영합니다！',
+            chatWindow: '채팅 창',
+            selectConversation: '대화를 선택하여 채팅을 시작하세요',
+            inputMessage: '메시지를 입력...',
+            send: '전송'
+          },
+          home: {
+            platformFeatures: '플랫폼 특징',
+            hotCircles: '인기 서클',
+            recommendedCourses: '추천 코스',
+            joinNow: '지금 가입',
+            browseCommunity: '커뮤니티 탐색',
+            multilingualSupport: '다국어 지원',
+            communityExchange: '커뮤니티 교환',
+            languageLearning: '언어 학습',
+            achievementSystem: '업적 시스템',
+            multilingualDescription: '중국어, 영어, 일본어, 한국어 지원',
+            communityDescription: '게시물 작성, 댓글, 관심 서클 가입',
+            learningDescription: '풍부한 언어 코스로 쉽게 학습',
+            achievementDescription: '레벨 배지, 포인트 보상, 랭킹 경쟁',
+            heroTitle: '전 세계 도라에몽 팬을 연결하여 함께 배우고, 교환하고, 성장',
+            members: '멤버',
+            posts: '게시물',
+            viewMoreCircles: '더 많은 서클 보기 →',
+            viewMoreCourses: '더 많은 코스 보기 →',
+            enrolled: '명이 등록'
+          },
+          leaderboard: {
+            experience: '경험치',
+            points: '포인트',
+            learning: '학습',
+            rank: '순위',
+            user: '사용자'
+          },
+          login: {
+            rememberMe: '로그인 기억',
+            orLoginWith: '또는 다음으로 로그인',
+            wechat: 'WeChat',
+            weibo: 'Weibo'
+          },
+          course: {
+            courseDetail: '코스 상세',
+            loadingCourse: '코스 콘텐츠 로딩 중...'
+          },
+          circle: {
+            circleDetail: '서클 상세',
+            loadingCircle: '서클 콘텐츠 로딩 중...'
           }
         }
       }

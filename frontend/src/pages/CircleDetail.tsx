@@ -1,8 +1,11 @@
+import { useTranslation } from 'react-i18next';
+
 const CircleDetail = () => {
+  const { t } = useTranslation();
   return (
-    <div className="card">
-      <h1 className="text-3xl font-bold mb-4">圈子详情</h1>
-      <p className="text-gray-600">圈子内容加载中...</p>
+    <div>
+      <h1 className="text-3xl font-bold mb-4">{t('circle.circleDetail')}</h1>
+      <p className="text-gray-600">{t('circle.loadingCircle')}</p>
     </div>
   );
 };

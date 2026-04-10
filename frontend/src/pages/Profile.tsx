@@ -49,17 +49,17 @@ const Profile = () => {
 
         <div className="card">
           <h2 className="text-xl font-semibold mb-4">{t('learning.myCourses')}</h2>
-          <p className="text-gray-500">暂无报名课程</p>
+          <p className="text-gray-500">{t('profile.noCourses')}</p>
         </div>
 
         <div className="card">
           <h2 className="text-xl font-semibold mb-4">{t('community.posts')}</h2>
-          <p className="text-gray-500">暂无发布的帖子</p>
+          <p className="text-gray-500">{t('profile.noPosts')}</p>
         </div>
 
         <div className="card">
           <h2 className="text-xl font-semibold mb-4">{t('community.circles')}</h2>
-          <p className="text-gray-500">暂无加入的圈子</p>
+          <p className="text-gray-500">{t('profile.noCircles')}</p>
         </div>
       </div>
     </div>
