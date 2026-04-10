@@ -19,8 +19,10 @@ const corsOptions = {
 };
 
 // Serve static avatar files BEFORE helmet to avoid CSP issues
+// Default avatars from frontend
 app.use('/avatars', express.static('/opt/doraemon-platform/frontend/public/avatars'));
-app.use('/avatars/uploads', express.static('/opt/doraemon-platform/frontend/public/avatars/uploads'));
+// Uploaded avatars from persistent data directory
+app.use('/avatars/uploads', express.static('/opt/doraemon-platform/data/avatars/uploads'));
 
 app.use(helmet({
   contentSecurityPolicy: {

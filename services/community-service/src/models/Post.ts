@@ -2,8 +2,6 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IPost extends Document {
   authorId: mongoose.Types.ObjectId;
-  authorName: string;
-  authorAvatar: string;
   title: string;
   content: string;
   images: string[];
@@ -20,8 +18,6 @@ export interface IPost extends Document {
 
 const PostSchema = new Schema<IPost>({
   authorId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  authorName: { type: String, required: true },
-  authorAvatar: { type: String, default: '' },
   title: { type: String, required: true, maxlength: 200 },
   content: { type: String, required: true, maxlength: 10000 },
   images: [{ type: String }],

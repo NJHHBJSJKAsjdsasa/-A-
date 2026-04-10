@@ -5,6 +5,24 @@ import { Circle } from '../models/Circle';
 import { AuthRequest } from '../middleware/auth';
 import { ServiceCommunicator } from '@doraemon/shared';
 
+// Helper function to get user info from user service
+const getUserInfo = async (userId: string, token?: string) => {
+  try {
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await ServiceCommunicator.userService(`/${userId}`, {
+      method: 'GET',
+      headers
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to get user info:', error);
+    return null;
+  }
+};
+
 export const getPosts = async (req: Request, res: Response) => {
   try {
     const { 
@@ -31,11 +49,37 @@ export const getPosts = async (req: Request, res: Response) => {
       .limit(Number(limit))
       .lean();
 
+    // Get unique author IDs
+    const authorIds = [...new Set(posts.map(post => post.authorId.toString()))];
+    
+    // Fetch user info for all authors
+    const userInfoMap: Record<string, { nickname: string; avatar: string }> = {};
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    await Promise.all(
+      authorIds.map(async (id) => {
+        const userInfo = await getUserInfo(id, token);
+        if (userInfo) {
+          userInfoMap[id] = {
+            nickname: userInfo.nickname || 'Unknown',
+            avatar: userInfo.avatar || ''
+          };
+        }
+      })
+    );
+
+    // Add author info to posts
+    const postsWithAuthor = posts.map(post => ({
+      ...post,
+      authorName: userInfoMap[post.authorId.toString()]?.nickname || 'Unknown',
+      authorAvatar: userInfoMap[post.authorId.toString()]?.avatar || ''
+    }));
+
     const total = await Post.countDocuments(query);
 
     res.json({
       success: true,
-      data: posts,
+      data: postsWithAuthor,
       meta: {
         page: Number(page),
         limit: Number(limit),
@@ -64,9 +108,19 @@ export const getPost = async (req: Request, res: Response) => {
       });
     }
 
+    // Get author info
+    const token = req.headers.authorization?.split(' ')[1];
+    const userInfo = await getUserInfo(post.authorId.toString(), token);
+
+    const postWithAuthor = {
+      ...post,
+      authorName: userInfo?.nickname || 'Unknown',
+      authorAvatar: userInfo?.avatar || ''
+    };
+
     res.json({
       success: true,
-      data: post
+      data: postWithAuthor
     });
   } catch (error) {
     console.error('Get post error:', error);
@@ -81,20 +135,11 @@ export const createPost = async (req: AuthRequest, res: Response) => {
   try {
     const { title, content, images = [], videos = [], circleId, tags = [], language = 'zh' } = req.body;
     const authorId = req.user?.userId;
-    const authorName = req.user?.nickname;
-    const authorAvatar = req.user?.avatar;
 
     if (!title || !content) {
       return res.status(400).json({
         success: false,
         error: { code: 'MISSING_FIELDS', message: 'Title and content are required' }
-      });
-    }
-
-    if (!authorName) {
-      return res.status(401).json({
-        success: false,
-        error: { code: 'UNAUTHORIZED', message: 'User information not available' }
       });
     }
 
@@ -149,8 +194,6 @@ export const createPost = async (req: AuthRequest, res: Response) => {
 
     const post = new Post({
       authorId,
-      authorName,
-      authorAvatar: authorAvatar || '',
       title,
       content,
       images,
@@ -333,19 +376,55 @@ export const getComments = async (req: Request, res: Response) => {
       .limit(Number(limit))
       .lean();
 
+    // Get unique author IDs from comments and replies
+    const authorIds = new Set<string>();
+    comments.forEach(comment => {
+      authorIds.add(comment.authorId.toString());
+    });
+
+    // Fetch replies
     for (const comment of comments) {
       const replies = await Comment.find({ parentId: comment._id })
         .sort({ createdAt: 1 })
         .limit(3)
         .lean();
+      replies.forEach(reply => authorIds.add(reply.authorId.toString()));
       (comment as Record<string, unknown>).replies = replies;
     }
+
+    // Fetch user info for all authors
+    const userInfoMap: Record<string, { nickname: string; avatar: string }> = {};
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    await Promise.all(
+      Array.from(authorIds).map(async (id) => {
+        const userInfo = await getUserInfo(id, token);
+        if (userInfo) {
+          userInfoMap[id] = {
+            nickname: userInfo.nickname || 'Unknown',
+            avatar: userInfo.avatar || ''
+          };
+        }
+      })
+    );
+
+    // Add author info to comments and replies
+    const commentsWithAuthor = comments.map(comment => ({
+      ...comment,
+      authorName: userInfoMap[comment.authorId.toString()]?.nickname || 'Unknown',
+      authorAvatar: userInfoMap[comment.authorId.toString()]?.avatar || '',
+      replies: ((comment as Record<string, unknown>).replies as any[] || []).map(reply => ({
+        ...reply,
+        authorName: userInfoMap[reply.authorId.toString()]?.nickname || 'Unknown',
+        authorAvatar: userInfoMap[reply.authorId.toString()]?.avatar || ''
+      }))
+    }));
 
     const total = await Comment.countDocuments({ postId, parentId: { $exists: false } });
 
     res.json({
       success: true,
-      data: comments,
+      data: commentsWithAuthor,
       meta: {
         page: Number(page),
         limit: Number(limit),
@@ -366,20 +445,11 @@ export const createComment = async (req: AuthRequest, res: Response) => {
     const { postId } = req.params;
     const { content, parentId } = req.body;
     const authorId = req.user?.userId;
-    const authorName = req.user?.nickname;
-    const authorAvatar = req.user?.avatar;
 
     if (!content) {
       return res.status(400).json({
         success: false,
         error: { code: 'MISSING_CONTENT', message: 'Comment content is required' }
-      });
-    }
-
-    if (!authorName) {
-      return res.status(401).json({
-        success: false,
-        error: { code: 'UNAUTHORIZED', message: 'User information not available' }
       });
     }
 
@@ -429,19 +499,26 @@ export const createComment = async (req: AuthRequest, res: Response) => {
     const comment = new Comment({
       postId,
       authorId,
-      authorName,
-      authorAvatar: authorAvatar || '',
       parentId,
       content
     });
 
     await comment.save();
 
+    // Get author info for response
+    const token = req.headers.authorization?.split(' ')[1];
+    const userInfo = await getUserInfo(authorId as string, token);
+    const commentWithAuthor = {
+      ...comment.toObject(),
+      authorName: userInfo?.nickname || 'Unknown',
+      authorAvatar: userInfo?.avatar || ''
+    };
+
     await Post.findByIdAndUpdate(postId, { $inc: { comments: 1 } });
 
     res.status(201).json({
       success: true,
-      data: comment
+      data: commentWithAuthor
     });
   } catch (error) {
     console.error('Create comment error:', error);

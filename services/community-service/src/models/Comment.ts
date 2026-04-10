@@ -3,8 +3,6 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IComment extends Document {
   postId: mongoose.Types.ObjectId;
   authorId: mongoose.Types.ObjectId;
-  authorName: string;
-  authorAvatar: string;
   parentId?: mongoose.Types.ObjectId;
   content: string;
   likes: number;
@@ -16,8 +14,6 @@ export interface IComment extends Document {
 const CommentSchema = new Schema<IComment>({
   postId: { type: Schema.Types.ObjectId, ref: 'Post', required: true },
   authorId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  authorName: { type: String, required: true },
-  authorAvatar: { type: String, default: '' },
   parentId: { type: Schema.Types.ObjectId, ref: 'Comment' },
   content: { type: String, required: true, maxlength: 2000 },
   likes: { type: Number, default: 0 },

@@ -757,7 +757,7 @@ export const uploadAvatar = async (req: AuthRequest, res: Response) => {
     
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
-    const avatarDir = path.join(__dirname, '../../../../frontend/public/avatars/uploads');
+    const avatarDir = '/opt/doraemon-platform/data/avatars/uploads';
     
     // Ensure upload directory exists
     if (!fs.existsSync(avatarDir)) {
