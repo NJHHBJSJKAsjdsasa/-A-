@@ -1,5 +1,5 @@
 import express from 'express';
-import proxy from 'express-http-proxy';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -64,27 +64,21 @@ const authMiddleware = (req: express.Request, res: express.Response, next: expre
   }
 };
 
-const serviceProxy = (target: string, pathPrefix: string = '') => proxy(target, {
-  proxyReqPathResolver: (req) => {
-    // Remove /api prefix and add custom path prefix if needed
-    let path = req.originalUrl.replace(/^\/api/, '');
-    if (pathPrefix) {
-      path = path.replace(new RegExp(`^${pathPrefix}`), '');
+// Create proxy middleware
+const createServiceProxy = (target: string, pathRewrite: Record<string, string> = {}) => {
+  return createProxyMiddleware({
+    target,
+    changeOrigin: true,
+    pathRewrite,
+    onError: (err, req, res) => {
+      console.error('Proxy error:', err);
+      (res as express.Response).status(500).json({
+        success: false,
+        error: { code: 'SERVICE_UNAVAILABLE', message: 'Service temporarily unavailable' }
+      });
     }
-    return path || '/';
-  },
-  proxyReqBodyDecorator: (bodyContent, srcReq) => {
-    // Pass body content as-is
-    return bodyContent;
-  },
-  proxyErrorHandler: (err, res, next) => {
-    console.error('Proxy error:', err);
-    res.status(500).json({
-      success: false,
-      error: { code: 'SERVICE_UNAVAILABLE', message: 'Service temporarily unavailable' }
-    });
-  }
-});
+  });
+};
 
 app.get('/health', (req, res) => {
   res.json({ 
@@ -95,78 +89,53 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Auth routes - both /auth and /api/auth
-app.use('/auth', express.json(), serviceProxy(USER_SERVICE, '/auth'));
-app.use('/api/auth', express.json(), serviceProxy(USER_SERVICE, '/auth'));
+// Auth routes
+app.use('/auth', createServiceProxy(USER_SERVICE, { '^/auth': '' }));
+app.use('/api/auth', createServiceProxy(USER_SERVICE, { '^/api/auth': '' }));
 
 // User routes
-app.use('/users', express.json(), authMiddleware, serviceProxy(USER_SERVICE));
-app.use('/api/users', express.json(), authMiddleware, serviceProxy(USER_SERVICE));
+app.use('/users', authMiddleware, createServiceProxy(USER_SERVICE));
+app.use('/api/users', authMiddleware, createServiceProxy(USER_SERVICE, { '^/api/users': '/users' }));
 
-// Community routes
-// Public routes - GET requests only (must be defined BEFORE protected routes)
-app.get('/posts', serviceProxy(COMMUNITY_SERVICE));
-app.get('/api/posts', serviceProxy(COMMUNITY_SERVICE));
-app.get('/posts/:id', serviceProxy(COMMUNITY_SERVICE));
-app.get('/api/posts/:id', serviceProxy(COMMUNITY_SERVICE));
-app.get('/posts/:id/comments', serviceProxy(COMMUNITY_SERVICE));
-app.get('/api/posts/:id/comments', serviceProxy(COMMUNITY_SERVICE));
-app.get('/comments', serviceProxy(COMMUNITY_SERVICE));
-app.get('/api/comments', serviceProxy(COMMUNITY_SERVICE));
-app.get('/circles', serviceProxy(COMMUNITY_SERVICE));
-app.get('/api/circles', serviceProxy(COMMUNITY_SERVICE));
-app.get('/circles/:id', serviceProxy(COMMUNITY_SERVICE));
-app.get('/api/circles/:id', serviceProxy(COMMUNITY_SERVICE));
+// Community routes - GET routes (no auth required)
+app.use('/posts', createServiceProxy(COMMUNITY_SERVICE));
+app.use('/api/posts', createServiceProxy(COMMUNITY_SERVICE, { '^/api/posts': '/posts' }));
+app.use('/comments', createServiceProxy(COMMUNITY_SERVICE));
+app.use('/api/comments', createServiceProxy(COMMUNITY_SERVICE, { '^/api/comments': '/comments' }));
+app.use('/circles', createServiceProxy(COMMUNITY_SERVICE));
+app.use('/api/circles', createServiceProxy(COMMUNITY_SERVICE, { '^/api/circles': '/circles' }));
 
-// Protected routes - require authentication (POST, PUT, DELETE)
-app.post('/posts', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.post('/api/posts', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.put('/posts/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.put('/api/posts/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.delete('/posts/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.delete('/api/posts/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.post('/posts/:id/like', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.post('/api/posts/:id/like', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.post('/posts/:id/comments', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.post('/api/posts/:id/comments', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.delete('/comments/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.delete('/api/comments/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.post('/circles', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.post('/api/circles', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.put('/circles/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.put('/api/circles/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.delete('/circles/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.delete('/api/circles/:id', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.post('/circles/:id/join', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
-app.post('/api/circles/:id/join', express.json(), authMiddleware, serviceProxy(COMMUNITY_SERVICE));
+// Protected community routes
+app.use('/posts', authMiddleware, createServiceProxy(COMMUNITY_SERVICE));
+app.use('/api/posts', authMiddleware, createServiceProxy(COMMUNITY_SERVICE, { '^/api/posts': '/posts' }));
 
 // Message routes
-app.use('/messages', express.json(), authMiddleware, serviceProxy(MESSAGE_SERVICE));
-app.use('/api/messages', express.json(), authMiddleware, serviceProxy(MESSAGE_SERVICE));
-app.use('/conversations', express.json(), authMiddleware, serviceProxy(MESSAGE_SERVICE));
-app.use('/api/conversations', express.json(), authMiddleware, serviceProxy(MESSAGE_SERVICE));
+app.use('/messages', authMiddleware, createServiceProxy(MESSAGE_SERVICE));
+app.use('/api/messages', authMiddleware, createServiceProxy(MESSAGE_SERVICE, { '^/api/messages': '/messages' }));
+app.use('/conversations', authMiddleware, createServiceProxy(MESSAGE_SERVICE));
+app.use('/api/conversations', authMiddleware, createServiceProxy(MESSAGE_SERVICE, { '^/api/conversations': '/conversations' }));
 
 // Achievement routes
-app.use('/badges', express.json(), serviceProxy(ACHIEVEMENT_SERVICE));
-app.use('/api/badges', express.json(), serviceProxy(ACHIEVEMENT_SERVICE));
-app.use('/achievements', express.json(), serviceProxy(ACHIEVEMENT_SERVICE));
-app.use('/api/achievements', express.json(), serviceProxy(ACHIEVEMENT_SERVICE));
-app.use('/leaderboard', express.json(), serviceProxy(ACHIEVEMENT_SERVICE));
-app.use('/api/leaderboard', express.json(), serviceProxy(ACHIEVEMENT_SERVICE));
-app.use('/points', express.json(), authMiddleware, serviceProxy(ACHIEVEMENT_SERVICE));
-app.use('/api/points', express.json(), authMiddleware, serviceProxy(ACHIEVEMENT_SERVICE));
+app.use('/badges', createServiceProxy(ACHIEVEMENT_SERVICE));
+app.use('/api/badges', createServiceProxy(ACHIEVEMENT_SERVICE, { '^/api/badges': '/badges' }));
+app.use('/achievements', createServiceProxy(ACHIEVEMENT_SERVICE));
+app.use('/api/achievements', createServiceProxy(ACHIEVEMENT_SERVICE, { '^/api/achievements': '/achievements' }));
+app.use('/leaderboard', createServiceProxy(ACHIEVEMENT_SERVICE));
+app.use('/api/leaderboard', createServiceProxy(ACHIEVEMENT_SERVICE, { '^/api/leaderboard': '/leaderboard' }));
+app.use('/points', authMiddleware, createServiceProxy(ACHIEVEMENT_SERVICE));
+app.use('/api/points', authMiddleware, createServiceProxy(ACHIEVEMENT_SERVICE, { '^/api/points': '/points' }));
 
 // Learning routes
-app.use('/courses', express.json(), serviceProxy(LEARNING_SERVICE));
-app.use('/api/courses', express.json(), serviceProxy(LEARNING_SERVICE));
-app.use('/lessons', express.json(), serviceProxy(LEARNING_SERVICE));
-app.use('/api/lessons', express.json(), serviceProxy(LEARNING_SERVICE));
-app.use('/learning', express.json(), serviceProxy(LEARNING_SERVICE));
-app.use('/api/learning', express.json(), serviceProxy(LEARNING_SERVICE));
+app.use('/courses', createServiceProxy(LEARNING_SERVICE));
+app.use('/api/courses', createServiceProxy(LEARNING_SERVICE, { '^/api/courses': '/courses' }));
+app.use('/lessons', createServiceProxy(LEARNING_SERVICE));
+app.use('/api/lessons', createServiceProxy(LEARNING_SERVICE, { '^/api/lessons': '/lessons' }));
+app.use('/learning', authMiddleware, createServiceProxy(LEARNING_SERVICE));
+app.use('/api/learning', authMiddleware, createServiceProxy(LEARNING_SERVICE, { '^/api/learning': '/learning' }));
 
 // File routes
-app.use('/files', express.json(), authMiddleware, serviceProxy(FILE_SERVICE));
-app.use('/api/files', express.json(), authMiddleware, serviceProxy(FILE_SERVICE));
+app.use('/files', authMiddleware, createServiceProxy(FILE_SERVICE));
+app.use('/api/files', authMiddleware, createServiceProxy(FILE_SERVICE, { '^/api/files': '/files' }));
 
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Gateway error:', err);

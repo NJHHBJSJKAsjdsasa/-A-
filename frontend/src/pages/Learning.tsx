@@ -11,7 +11,7 @@ const Learning = () => {
   const { courses, loading } = useSelector((state: RootState) => state.learning);
 
   useEffect(() => {
-    dispatch(fetchCourses() as any);
+    dispatch(fetchCourses({}) as any);
   }, [dispatch]);
 
   const levelColors: Record<string, string> = {
